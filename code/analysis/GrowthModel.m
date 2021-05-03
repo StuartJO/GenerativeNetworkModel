@@ -46,6 +46,19 @@ function [B,b] = GrowthModel(AddOrMult,D,TopoType,Eta,Gamma,alpha,Kalpha,density
 %                                       exponential ('exponential') 
 %                                       function (default = 'powerlaw')
 % 
+%                                 PDM = A pairwise distance matrix, the
+%                                       same size as the matrices in D
+%
+%                             PDMFunc = specifies whether the generative 
+%                                       rules for the PDM are based on a
+%                                       power-law ('powerlaw') or 
+%                                       exponential ('exponential') 
+%                                       function (default = 'powerlaw') 
+%
+%                             normsum = set to 1 to normalise the funciton
+%                                       by the sum of values rather than
+%                                       the max
+%
 % List of generative rules impliamented (adapted from code made available
 % by Rick Betzel)
 %       1.  'sptl'          spatial model
@@ -178,13 +191,7 @@ for I = 1:length(Dists)
                  [B,btemp] = gen_model_additive_fast2_PD_normsum(B,PD,desiredEdges,TopoType,modelvar,PDexpo,Gamma,[1 Kalpha alpha(2)],E);
                            
                         end
-                %[B,btemp] = gen_model_additive_fast(B,PD,desiredEdges,TopoType,modelvar,Eta,Gamma,[alpha,Kalpha],E);
-                
-                
-                    %[B,b,F] = gen_model_additive_normalise(B,Dists{I},desiredEdges,TopoType,modelvar,Eta,Gamma,alpha,E,norm,Fo{I});           
-                %else
-                %    A = gen_model_additive(A,Dists{I},desiredEdges,TopoType,modelvar,Eta,Gamma,alpha,E,Fo{I});
-                %end
+
                     case 'Mult'
                 [B,btemp] = gen_model_mult_pd(B,PD,desiredEdges,TopoType,{{modelvar{1},modelvar{3}},modelvar{2}},PDexpo,Gamma,E);             
          

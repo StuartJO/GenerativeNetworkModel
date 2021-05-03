@@ -27,9 +27,6 @@ for j = 1:13
      nets = cell(nsub,nsub);
      for l = 1:length(iters2use)%1:5
          load([file_start,num2str(j),file_middle,num2str(l),file_end])
-    %load(['CrossValidate_CGE_model_',num2str(j),'crossvalid_gene_mdls.mat'])
-   %load(['CrossValidate_indvparams_',modeltype,'_',TYPE,'_indvdist_',num2str(INDVDIST),'_growth_',num2str(GROWTH),'_',num2str(iters2use(l)),'.mat'])
-  
    for i = 1:nsub
        for ii = 1:nsub
 %         d = mean(EcrossValid{i},2);
@@ -65,7 +62,7 @@ for j = 1:13
 
    end
    
-   display(['Finding best networks'])
+   disp('Finding best networks')
 
    bestNetPerParam = cell(1,nsub);
   for i = 1:100

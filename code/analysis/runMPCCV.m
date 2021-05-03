@@ -89,9 +89,9 @@ load('MPCarandom200.mat','MPCa');
 
 load('random200_100randsubs_for_modelling.mat','adjs')
 
-load('random200_distances.mat','ADJS')
+load('random200_distances.mat','dists')
 
-A_dist = ADJS{19};
+A_dist = dists{19};
 
 if i == 1
 
@@ -102,7 +102,7 @@ if i == 1
 else
 
     if Input.Growth
-        D = ADJS;
+        D = dists;
     else
         D = A_dist;
     end

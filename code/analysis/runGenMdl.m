@@ -1,4 +1,4 @@
-function runGenMdl(TYPE,SUB,GROWTH)
+function Outputs = runGenMdl(TYPE,SUB,GROWTH)
 
 Input.Growth = GROWTH;
 Input.DistFunc = 'exponential';
@@ -53,12 +53,12 @@ load('random200_100randsubs_for_modelling.mat','adjs')
 
 A = double(adjs{SUB}>0);
 
-load('random200_distances.mat','ADJS')
+load('random200_distances.mat','dists')
 
-A_dist = ADJS{19};
+A_dist = dists{19};
 
 if GROWTH
-    D = ADJS;
+    D = dists;
 else
     D = A_dist;
 end
@@ -72,7 +72,7 @@ if TYPE == 2
        Input.ParamRange(3,:) = [0 8]; 
     end
 end
-[~,E{i},K{i},P{i},b{i},C{i},B{i},Ebest{i},Kbest{i},Cbest{i},b_best{i},EbestCorr{i},KbestCorr{i},CbestCorr{i},b_bestCorr{i}]= GenMdl(A,A_dist,D,[],Input);
+[Outputs,E{i},K{i},P{i},b{i},C{i},B{i},Ebest{i},Kbest{i},Cbest{i},b_best{i},EbestCorr{i},KbestCorr{i},CbestCorr{i},b_bestCorr{i}]= GenMdl(A,A_dist,D,[],Input);
 
 end
 

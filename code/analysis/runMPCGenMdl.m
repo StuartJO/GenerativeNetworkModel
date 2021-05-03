@@ -2,7 +2,6 @@ function runMPCGenMdl(SUB,GROWTH)
 
 Input.Growth = GROWTH;
 Input.ModelNum = 1;
-% eta (PD1 param)
 
 for i = 1:4
 
@@ -90,9 +89,9 @@ load('random200_100randsubs_for_modelling.mat','adjs')
 
 A = double(adjs{SUB}>0);
 
-load('random200_distances.mat','ADJS')
+load('random200_distances.mat','dists')
 
-A_dist = ADJS{19};
+A_dist = dists{19};
 
 if i == 1
 
@@ -103,7 +102,7 @@ if i == 1
 else
 
     if GROWTH
-        D = ADJS;
+        D = dists;
     else
         D = A_dist;
     end
