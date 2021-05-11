@@ -1,4 +1,4 @@
-function [Output,E,K,P,b,C,B,Ebest,Kbest,Cbest,b_best,EbestCorr,KbestCorr,CbestCorr,b_bestCorr] = GenMdl(A,A_dist,D,PD,Input)
+function [Output,E,K,P,b,C,BestFit_B,BestFit_E,BestFit_K,BestFit_C,BestFit_b,BestCorr_E,BestCorr_K,BestCorr_C,BestCorr_b] = GenMdl(A,A_dist,D,PD,Input)
 
 % A = Adjaceny matrix to model
 
@@ -46,28 +46,43 @@ function [Output,E,K,P,b,C,B,Ebest,Kbest,Cbest,b_best,EbestCorr,KbestCorr,CbestC
 % Input.ParamRange(2,:) = gamma value range
 % Input.ParamRange(3,:) = first alpha value range
 % Input.ParamRange(4,:) = second alpha value range
-% Input.ParamRange(4,:) = lambda alpha value range
+% Input.ParamRange(5,:) = lambda alpha value range
 % Note that for the multiplicative form, the alpha values will do nothing
+%
+% Output:
+% Output.E = Energy/model fits for optimisation network
+% Output.K = KS statistics of degree, clustering, betweenness and edge length for each optimisation network
+% Output.P = Parameters used for each optimisation network
+% Output.b = Matrix index of edges for each optimisation network
+% Output.C = Spearman correlation of nodal degree (with empirical data) for each optimisation network
+% Output.BestFit_B = Adjacency matrices for 100 networks produced using the best fitting parameters
+% Output.BestFit_E = Energy/model fits for 100 networks produced using the best fitting parameters
+% Output.BestFit_K = KS statistics for 100 networks produced using the best fitting parameters
+% Output.BestFit_C = Spearman correlation of nodal degree (with empirical data) for 100 networks produced using the best fitting parameters
+% Output.BestFit_b = Matrix index of edges for 100 networks produced using the best fitting parameters
+% Output.BestCorr_E = Energy/model fits for 100 networks produced using the parameters producing the best correlation
+% Output.BestCorr_K = KS statistics for 100 networks produced using the parameters producing the best correlation
+% Output.BestCorr_C = Spearman correlation of nodal degree (with empirical data) for 100 networks produced using the parameters producing the best correlation
+% Output.BestCorr_b = Matrix index of edges for 100 networks produced using the parameters producing the best correlation
 
-etaRange = Input.ParamRange(1,:);
-gamRange = Input.ParamRange(2,:);
-lamlim = Input.ParamRange(5,:);
-alphalim = Input.ParamRange(3,:);
-alpha2lim = Input.ParamRange(4,:);
+% etaRange = Input.ParamRange(1,:);
+% gamRange = Input.ParamRange(2,:);
+% lamlim = Input.ParamRange(5,:);
+% alphalim = Input.ParamRange(3,:);
+% alpha2lim = Input.ParamRange(4,:);
 
 rng('shuffle')
 
 seed = [];
- %end
+
 switch Input.AddMult
 case 'Add'
-epsilon = 0;
+Input.epsilon = 0;
 case 'Mult'
-epsilon = 1e-6;
+Input.epsilon = 1e-6;
 end
 
-normsum = 0;
-
+Input.normsum = 0;
 
 if iscell(D) == 1 && length(D) > 1
     Steps = length(D);
@@ -77,57 +92,48 @@ else
     [m,~,~] =  density_und(A); 
 end
 
-ndraw = 2000;
+% ndraw = number of partameters to do at each optimisation level
+% nlvl = number of optimisation levels
+% pow = exponent of the powerlaw controlling the probability of sampling
+% from the cells with the lowest energy (higher value = more likely)
 
-mtype = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
+Input.ndraw = 2000;
+Input.nlvl = 5;
+Input.pow = 2;
 
-[E,K,P,b,C] = VoronoinLandScapeGene(Input.AddMult,A,A_dist,D,mtype{Input.ModelNum},m,seed,Input.DistFunc,'powerlaw',etaRange,gamRange,alphalim,2,5,ndraw,1,PD,lamlim,alpha2lim,Input.GeneFunc,normsum);
+runparfor = 1;
+%mtype = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
 
+[E,K,P,b,C] = VoronoinLandScapeGene(Input,A,A_dist,D,PD,m,seed,runparfor);
 
        [~,I] = min(E); 
-       
 
-    bestEta = P(I,1);
-	bestGam = P(I,2);
-    bestAlpha1 = P(I,3);
-    bestAlpha2 = P(I,4);    
-    bestLam = P(I,5);
+        bestParams = P(I,:);
 
-        B = cell(1,100);
-        Ebest = zeros(1,100);
-        Kbest = zeros(100,4);
-        Cbest = zeros(1,100);
+        BestFit_B = cell(1,100);
+        BestFit_E = zeros(1,100);
+        BestFit_K = zeros(100,4);
+        BestFit_C = zeros(1,100);
        parfor k = 1:100
         
-        [B{k},b_best{k}] = GrowthModel(Input.AddMult,D,mtype{Input.ModelNum},[bestEta bestLam],bestGam,[1 bestAlpha2],bestAlpha1,m,...
-                1,epsilon,seed,Input.DistFunc,'powerlaw',PD,Input.GeneFunc,normsum);
+        [BestFit_B{k},BestFit_b{k}] = RunGrowthModel(Input,D,PD,bestParams,m,seed);
         
-           [Ebest(k), Kbest(k,:)] = Betzel_energy(A,A_dist,B{k});
-	Cbest(k) = corr(sum(B{k})',sum(A)','Type','Spearman');
+           [BestFit_E(k), BestFit_K(k,:)] = Betzel_energy(A,A_dist,BestFit_B{k});
+	BestFit_C(k) = corr(sum(BestFit_B{k})',sum(A)','Type','Spearman');
        end
-
-
 
        [~,I] = max(C); 
 
-    bestEtaCorr = P(I,1);
-	bestGamCorr = P(I,2);
-    bestAlpha1Corr = P(I,3);
-    bestAlpha2Corr = P(I,4);
-    bestLamCorr = P(I,5);
+        bestParamsCorr = P(I,:);
 
-       modeltype = mtype{Input.ModelNum};
-        BCorr = cell(1,100);
-        EbestCorr = zeros(1,100);
-        KbestCorr = zeros(100,4);
-        CbestCorr = zeros(1,100);
+        BestCorr_B = cell(1,100);
+        BestCorr_E = zeros(1,100);
+        BestCorr_K = zeros(100,4);
+        BestCorr_C = zeros(1,100);
        parfor k = 1:100
-         %  [BCorr{k},b_bestCorr{k}] = TopologyInput.GrowthModelAdditive(D,mtype{modelnum},bestEtaCorr,bestGamCorr,[1 bestAlphaCorr],m,...
-           % 1,0,seed,distfunc,'powerlaw');
-                [BCorr{k},b_bestCorr{k}]  = GrowthModel(Input.AddMult,D,mtype{Input.ModelNum},[bestEtaCorr bestLamCorr],bestGamCorr,[1 bestAlpha2Corr],bestAlpha1Corr,m,...
-                1,epsilon,seed,Input.DistFunc,'powerlaw',PD,Input.GeneFunc,normsum);
-           [EbestCorr(k), KbestCorr(k,:)] = Betzel_energy(A,A_dist,BCorr{k});
-	CbestCorr(k) = corr(sum(BCorr{k})',sum(A)','Type','Spearman');
+            [BestCorr_B{k},BestCorr_b{k}] = RunGrowthModel(Input,D,PD,bestParamsCorr,m,seed);
+           [BestCorr_E(k), BestCorr_K(k,:)] = Betzel_energy(A,A_dist,BestCorr_B{k});
+	BestCorr_C(k) = corr(sum(BestCorr_B{k})',sum(A)','Type','Spearman');
        end
        
       
@@ -136,13 +142,13 @@ Output.K = K;
 Output.P = P;
 Output.b = b;
 Output.C = C;
-Output.B = B;
-Output.Ebest = Ebest;
-Output.Kbest = Kbest;
-Output.Cbest = Cbest;
-Output.b_best = b_best;
-Output.EbestCorr = EbestCorr;
-Output.KbestCorr = KbestCorr;
-Output.CbestCorr = CbestCorr;
-Output.b_bestCorr = b_bestCorr;
+Output.BestFit_B = BestFit_B;
+Output.BestFit_E = BestFit_E;
+Output.BestFit_K = BestFit_K;
+Output.BestFit_C = BestFit_C;
+Output.BestFit_b = BestFit_b;
+Output.BestCorr_E = BestCorr_E;
+Output.BestCorr_K = BestCorr_K;
+Output.BestCorr_C = BestCorr_C;
+Output.BestCorr_b = BestCorr_b;
 
