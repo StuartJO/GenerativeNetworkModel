@@ -1,4 +1,4 @@
-function runGenMdl(TYPE,SUB,GROWTH,SAVELOC)
+function runGenTopoMdl(TYPE,SUB,GROWTH,SAVELOC)
 
 % This runs the topological generative models.
 % TYPE = value between 1 to 13.

@@ -1,4 +1,4 @@
-function Run_PhysMdls(MDL,SUB,GROWTH,PARC)
+function runGenPhysMdl(MDL,SUB,GROWTH,PARC)
 
 Input.Growth = GROWTH;
 Input.PD1Func = 'exponential';
