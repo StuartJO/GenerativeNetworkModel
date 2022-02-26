@@ -1,4 +1,4 @@
-function CV_output = CrossValidateModel(adjs,A_dist,D,PD,P,INSTANCES,Input)
+function CV_output = CrossValidateModel(adjs,A_dist,PD1,PD2,P,INSTANCES,Input)
 
 rng('shuffle')
 
@@ -11,15 +11,17 @@ case 'Mult'
 epsilon = 1e-6;
 end
 
-normsum = 0;
+TopoTypes = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
+Input.TopoType = TopoTypes{Input.ModelNum};
+
 addpath /projects/kg98/stuarto/BCT
 
-for i = 1:100
+for i = 1:length(adjs)
 %load('Rand200_GeneData.mat')
  A = double(adjs{i}>0);
  %Input.GeneFunc = 'exponential';
 
-if iscell(D) == 1
+if iscell(PD1) == 1
     Steps = length(D);
     %den = density_und(A); 
     %m = (den/Steps):(den/Steps):den;
@@ -32,8 +34,8 @@ end
 
 mtype = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
 A_nodedist = sum(A_dist.*A)./sum(A,1);
-for j = 1:100       
-
+for j = 1:size(P,1)       
+    p = P(j,:);
     bestEta = P(j,1);
 	bestGam = P(j,2);
     bestAlpha1 = P(j,3);
@@ -44,8 +46,7 @@ for j = 1:100
 
        for k = 1:INSTANCES
         
-        [B,b{k}] = GrowthModel(Input.AddMult,D,mtype{Input.ModelNum},[bestEta bestLam],bestGam,[1 bestAlpha2],bestAlpha1,m,...
-                1,epsilon,seed,Input.DistFunc,'powerlaw',PD,Input.GeneFunc,normsum);
+        [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
         
         [ksmax(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals{k}] = Betzel_energy(A,A_dist,B);
                 deg(k,:) = NodeVals{k}{1};
@@ -78,8 +79,7 @@ for j = 1:100
 
        parfor k = 1:INSTANCES
         
-        [B,b{k}] = GrowthModel(Input.AddMult,D,mtype{Input.ModelNum},[bestEta bestLam],bestGam,[1 bestAlpha2],bestAlpha1,m,...
-                1,epsilon,seed,Input.DistFunc,'powerlaw',PD,Input.GeneFunc,normsum);
+        [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
         
         [ksmax(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals{k}] = Betzel_energy(A,A_dist,B);
                 deg(k,:) = NodeVals{k}{1};

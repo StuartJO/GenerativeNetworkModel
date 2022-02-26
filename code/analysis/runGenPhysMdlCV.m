@@ -1,9 +1,13 @@
-function Run_PhysMdls_CV(PARC,GROWTH,MdlNum,ITER)
+function runGenPhysMdlCV(PARC,GROWTH,MdlNum,ITER)
 
 Input.Growth = GROWTH;
-Input.DistFunc = 'exponential';
+Input.PD1Func = 'exponential';
 Input.IndvDist = 0;
-Input.GeneFunc = 'powerlaw';
+Input.PD2Func = 'powerlaw';
+Input.epsilon = 0;
+Input.seed = [];
+Input.normsum = 0;
+Input.TopoFunc = 'powerlaw';
 
 if PARC == 1
 mdldata = load('Schaefer200_data4physmdl.mat');
@@ -31,8 +35,8 @@ A_dist = mdldata.A_dist;
     end   
 if MdlNum == 1
 
-Input.DistFunc = 'exponential';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'exponential';
+Input.PD2Func = 'powerlaw';
 Input.ModelNum=1;
 Input.AddMult = 'Mult';
 PD = [];
@@ -50,8 +54,8 @@ Input.ParamRange(4,:) = [1 1];
 elseif MdlNum == 2
  
 % Additive 3 Spatial + corrected gene         
-Input.DistFunc = 'exponential';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'exponential';
+Input.PD2Func = 'powerlaw';
 Input.ModelNum=1;
 Input.AddMult = 'Add';
 
@@ -73,8 +77,8 @@ elseif MdlNum == 3
 
 Input.ModelNum=1;
 Input.AddMult = 'Mult';
-Input.DistFunc = 'powerlaw';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'powerlaw';
+Input.PD2Func = 'powerlaw';
 
 D = mdldata.cCGE;
 PD = [];
@@ -97,8 +101,8 @@ elseif MdlNum == 4
 
 Input.ModelNum=1;
 Input.AddMult = 'Add';
-Input.DistFunc = 'exponential';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'exponential';
+Input.PD2Func = 'powerlaw';
 
 PD = mdldata.uCGE;
 
@@ -118,8 +122,8 @@ elseif MdlNum == 5
 
 Input.ModelNum=1;
 Input.AddMult = 'Mult';
-Input.DistFunc = 'powerlaw';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'powerlaw';
+Input.PD2Func = 'powerlaw';
 
 D = mdldata.uCGE;
 PD = [];
@@ -136,8 +140,8 @@ Input.ParamRange(4,:) = [0 0];
 
 elseif MdlNum == 6
     
-Input.DistFunc = 'powerlaw';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'powerlaw';
+Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
 Input.ParamRange(1,:) = [0 50];
 Input.ModelNum=1;
@@ -158,8 +162,8 @@ Input.ParamRange(4,:) = [1 1];
 
 elseif MdlNum == 7
 
-Input.DistFunc = 'exponential';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'exponential';
+Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
 Input.ParamRange(1,:) = [-2 0];
 Input.ModelNum=1;
@@ -180,8 +184,8 @@ Input.ParamRange(4,:) = [0 8];
 
 elseif MdlNum == 8
     
-Input.DistFunc = 'powerlaw';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'powerlaw';
+Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
 Input.ParamRange(1,:) = [0 50];
 Input.ModelNum=1;
@@ -202,8 +206,8 @@ Input.ParamRange(4,:) = [1 1];
 
 elseif MdlNum == 9
 
-Input.DistFunc = 'exponential';
-Input.GeneFunc = 'powerlaw';
+Input.PD1Func = 'exponential';
+Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
 Input.ParamRange(1,:) = [-2 0];
 Input.ModelNum=1;
