@@ -10,17 +10,14 @@ Input.normsum = 0;
 Input.TopoFunc = 'powerlaw';
 
 if PARC == 1
-mdldata = load('Schaefer200_data4physmdl.mat');
-parcname = 'Schaefer200';
+    mdldata = load('random200_data4physmdl.mat');
+    parcname = 'random200';
 elseif PARC == 2
-mdldata = load('Schaefer400_data4physmdl.mat');
-parcname = 'Schaefer400';
+    mdldata = load('Schaefer200_data4physmdl.mat');
+    parcname = 'Schaefer200';
 elseif PARC == 3
-mdldata = load('random200_data4physmdl.mat');
-parcname = 'random200';
-elseif PARC == 4
-mdldata = load('random200_data4physmdl_18timepoints.mat');
-parcname = 'random200_18tps';
+    mdldata = load('random200_data4physmdl_18timepoints.mat');
+    parcname = 'random200_18tps';
 end
 
 display(['Performing cross-validation for ',parcname,', phys growth ',num2str(GROWTH),' model number ',num2str(MdlNum),', iteration ',num2str(ITER)]);
@@ -28,11 +25,12 @@ display(['Performing cross-validation for ',parcname,', phys growth ',num2str(GR
 adjs = mdldata.adjs;
 A_dist = mdldata.A_dist;
     
-     if GROWTH
-        D = mdldata.dists;
-    else
-        D = A_dist;
-    end   
+if GROWTH
+    D = mdldata.dists;
+else
+    D = A_dist;
+end 
+
 if MdlNum == 1
 
 Input.PD1Func = 'exponential';
@@ -241,7 +239,6 @@ Input.ParamRange(5,:) = [0 0];
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD2)
 Input.ParamRange(4,:) = [0 0];
-
 
 end
 
