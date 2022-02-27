@@ -12,17 +12,14 @@ Input.normsum = 0;
 Input.TopoFunc = 'powerlaw';
 
 if PARC == 1
-mdldata = load('Schaefer200_data4physmdl.mat');
-parcname = 'Schaefer200';
+    mdldata = load('random200_data4physmdl.mat');
+    parcname = 'random200';
 elseif PARC == 2
-mdldata = load('Schaefer400_data4physmdl.mat');
-parcname = 'Schaefer400';
+    mdldata = load('Schaefer200_data4physmdl.mat');
+    parcname = 'Schaefer200';
 elseif PARC == 3
-mdldata = load('random200_data4physmdl.mat');
-parcname = 'random200';
-elseif PARC == 4
-mdldata = load('random200_data4physmdl_18timepoints.mat');
-parcname = 'random200_18tps';
+    mdldata = load('random200_data4physmdl_18timepoints.mat');
+    parcname = 'random200_18tps';
 end
 
 display(['Performing cross-validation for ',parcname,', phys growth ',num2str(GROWTH),' model number ',num2str(MdlNum),', iteration ',num2str(ITER)]);
