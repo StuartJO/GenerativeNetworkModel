@@ -1,6 +1,8 @@
 function runGenPhysMdlCV(PARC,GROWTH,MdlNum,ITER)
 
 Input.Growth = GROWTH;
+
+% Set up some default options
 Input.PD1Func = 'exponential';
 Input.IndvDist = 0;
 Input.PD2Func = 'powerlaw';
@@ -28,11 +30,12 @@ display(['Performing cross-validation for ',parcname,', phys growth ',num2str(GR
 adjs = mdldata.adjs;
 A_dist = mdldata.A_dist;
     
-     if GROWTH
-        D = mdldata.dists;
-    else
-        D = A_dist;
-    end   
+if GROWTH
+    D = mdldata.dists;
+else
+    D = A_dist;
+end   
+
 if MdlNum == 1
 
 Input.PD1Func = 'exponential';
@@ -40,20 +43,9 @@ Input.PD2Func = 'powerlaw';
 Input.ModelNum=1;
 Input.AddMult = 'Mult';
 PD = [];
-% eta (PD1 param)
-Input.ParamRange(1,:) = [-2 0];
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
-% alpha
-Input.ParamRange(3,:) = [1 1];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [1 1];
 
 elseif MdlNum == 2
- 
-% Additive 3 Spatial + corrected gene         
+     
 Input.PD1Func = 'exponential';
 Input.PD2Func = 'powerlaw';
 Input.ModelNum=1;
@@ -61,18 +53,6 @@ Input.AddMult = 'Add';
 
 PD = mdldata.cCGE;
 
-% eta (PD1 param)
-Input.ParamRange(1,:) = [-2 0];
-% gamma
-Input.ParamRange(2,:) = [1 1];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [-50 250];
-% alpha
-Input.ParamRange(3,:) = [0 0];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 8];
-
- % Corrected gene
 elseif MdlNum == 3
 
 Input.ModelNum=1;
@@ -83,21 +63,7 @@ Input.PD2Func = 'powerlaw';
 D = mdldata.cCGE;
 PD = [];
 
-
-% eta (PD1 param)
-Input.ParamRange(1,:) = [-50 100];
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
-% alpha
-Input.ParamRange(3,:) = [0 0];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];
-
-% Additive 3 Spatial + non corrected gene 
 elseif MdlNum == 4
-
 
 Input.ModelNum=1;
 Input.AddMult = 'Add';
@@ -106,19 +72,7 @@ Input.PD2Func = 'powerlaw';
 
 PD = mdldata.uCGE;
 
-% eta (PD1 param)
-Input.ParamRange(1,:) = [-2 0];
-% gamma
-Input.ParamRange(2,:) = [1 1];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [-50 250];
-% alpha
-Input.ParamRange(3,:) = [0 0];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 8];
-% Non Corrected gene
 elseif MdlNum == 5
-
 
 Input.ModelNum=1;
 Input.AddMult = 'Mult';
@@ -127,121 +81,51 @@ Input.PD2Func = 'powerlaw';
 
 D = mdldata.uCGE;
 PD = [];
-% eta (PD1 param)
-Input.ParamRange(1,:) = [-50 100];
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
-% alpha
-Input.ParamRange(3,:) = [0 0];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];
 
 elseif MdlNum == 6
     
 Input.PD1Func = 'powerlaw';
 Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
-Input.ParamRange(1,:) = [0 50];
 Input.ModelNum=1;
-    
 
 D = mdldata.hist_mpc;
 PD = [];
-      Input.AddMult = 'Mult';
-%    fileoutname = 'mult2';
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
-% alpha
-Input.ParamRange(3,:) = [1 1];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [1 1];   
+Input.AddMult = 'Mult';
 
 elseif MdlNum == 7
 
 Input.PD1Func = 'exponential';
 Input.PD2Func = 'powerlaw';
-Input.normsum = 0;
-Input.ParamRange(1,:) = [-2 0];
 Input.ModelNum=1;
     
 PD = mdldata.hist_mpc;
-
 Input.AddMult = 'Add';
-
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 50];
-% alpha
-Input.ParamRange(3,:) = [0 0];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 8];   
-
 
 elseif MdlNum == 8
     
 Input.PD1Func = 'powerlaw';
 Input.PD2Func = 'powerlaw';
-Input.normsum = 0;
-Input.ParamRange(1,:) = [0 50];
 Input.ModelNum=1;
-    
 
 D = mdldata.t1t2_mpc;
 PD = [];
-      Input.AddMult = 'Mult';
-%    fileoutname = 'mult2';
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
-% alpha
-Input.ParamRange(3,:) = [1 1];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [1 1];   
+Input.AddMult = 'Mult';
 
 elseif MdlNum == 9
 
 Input.PD1Func = 'exponential';
 Input.PD2Func = 'powerlaw';
-Input.normsum = 0;
-Input.ParamRange(1,:) = [-2 0];
 Input.ModelNum=1;
     
 PD = mdldata.t1t2_mpc;
 Input.AddMult = 'Add';
-%fileoutname = 'add3';
-% gamma
-% gamma
-Input.ParamRange(2,:) = [0 0];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 50];
-% alpha
-Input.ParamRange(3,:) = [0 0];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 8];  
 
 elseif MdlNum == 10
 
 Input.AddMult = 'Add';
 Input.ModelNum=3;
 PD = [];
-
-% eta (PD1 param)
-Input.ParamRange(1,:) = [-2 0];
-% gamma
-Input.ParamRange(2,:) = [-8 8];
-% lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
-% alpha
-Input.ParamRange(3,:) = [0 8];
-% alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];
-
 
 end
 

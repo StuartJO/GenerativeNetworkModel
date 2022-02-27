@@ -13,12 +13,12 @@ Input.ndraw = 2000;
 Input.pow = 2;
 Input.nlvl = 5;
 
-if PARC == 2
-mdldata = load('Schaefer200_data4physmdl.mat');
-parcname = 'Schaefer200';
-elseif PARC == 1
+if PARC == 1
 mdldata = load('random200_data4physmdl.mat');
 parcname = 'random200';
+elseif PARC == 2
+mdldata = load('Schaefer200_data4physmdl.mat');
+parcname = 'Schaefer200';
 elseif PARC == 3
 mdldata = load('random200_data4physmdl_18timepoints.mat');
 parcname = 'random200_18tps';    
@@ -85,7 +85,6 @@ Input.PD2Func = 'powerlaw';
 
 D = mdldata.cCGE;
 PD = [];
-
 
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-50 100];

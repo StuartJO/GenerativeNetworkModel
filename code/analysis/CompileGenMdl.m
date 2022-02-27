@@ -6,19 +6,14 @@ end
 
 Mdlouts.missing = [];
 
-%load('random200_100randsubs_for_modelling.mat')
-
 filesubind = strfind(fileformat,'$');
 file_start = fileformat(1:filesubind-1);
 file_end = fileformat(filesubind+1:end);
 
 IND = 1;
 for i = 1:100
-    %filename = ['Sub_',num2str(i),'_',filesuffix,'.mat'];
 filename = [file_start,num2str(i),file_end];
     if exist(filename) == 2
-
-    %A = double(adjs{i}>0);
 
    load(filename)
    N = length(E);
