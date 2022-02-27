@@ -1,6 +1,14 @@
 function [maxKS,KS,P,b,C] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input)
 
-%-------------------------------------------------------------------------------
+% This function will perform optimisation using a Voronoi tessellation
+% approach, where from an initial set of random points in parameter space,
+% Voronoi tessellation will be performed to divide up the parameter space
+% into cells. Each cell has an associated maxKS value (based on the
+% parameter value used to draw that cell). The algorithm proceeds by
+% preferentially sampling parameter values from cells with the smallest 
+% maxKS, and then performing Voronoi tessellation again. This repeats a
+% number of times.
+
 ADeg = sum(A);
 numProperties = 4;
 
@@ -13,11 +21,17 @@ useParfor = Input.useParfor;
 TopoType = Input.TopoType;
 
 totalsamples = ndraw*nlvl;
+
+% Initalise output variables
 P = zeros(totalsamples,5);
 maxKS = zeros(totalsamples,1);
 C = zeros(totalsamples,1);
 KS = zeros(totalsamples,numProperties);
+powvals = linspace(0,pow,nlvl);
+b = cell(1,totalsamples);
 
+% Pull out the different parameters and sample at random from their ranges
+% to get a set of points to start the optimisation from
 etaRange = Input.ParamRange(1,:);
 gamRange = Input.ParamRange(2,:);
 lamRange = Input.ParamRange(5,:);
@@ -31,9 +45,7 @@ a2 = unifrnd(a2Range(1),a2Range(2),ndraw,1);
 lam = unifrnd(lamRange(1),lamRange(2),ndraw,1);
 P(1:ndraw,:) = [eta,gam,a1,a2,lam];
 bounds = [etaRange;gamRange;a1Range;a2Range;lamRange];
-%-------------------------------------------------------------------------------
-powvals = linspace(0,pow,nlvl);
-b = cell(1,totalsamples);
+
 for ilvl = 1:nlvl
     fprintf('level %i of %i\n',ilvl,nlvl);
 
@@ -65,8 +77,8 @@ for ilvl = 1:nlvl
                 
         parfor i = 1:ndraw          
                 [B,btemp{i}] = GrowthModel(PD1,PD2,ptsnew(i,:),m,Input);
-            [maxKSpar(i),KSpar(i,:)] = Betzel_energy(A,A_dist,B);
-            Cpar(i) = corr(sum(B)',ADeg','Type','Spearman');
+                [maxKSpar(i),KSpar(i,:)] = Betzel_energy(A,A_dist,B);
+                Cpar(i) = corr(sum(B)',ADeg','Type','Spearman');
         end
         
         maxKS(indnew) = maxKSpar;
