@@ -1,12 +1,15 @@
 function CV_output = CrossValidateModel(adjs,A_dist,PD1,PD2,P,INSTANCES,Input)
 
 % This function will for a set of networks, run each against a set of parameters
-%
+% to generate a network, and calculate KS, max(KS), and topography 
+% information off of this
 
 rng('shuffle')
 
 TopoTypes = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
 Input.TopoType = TopoTypes{Input.ModelNum};
+
+useParfor = Input.useParfor;
 
 Nsubs = length(adjs);
 Nparams = size(P,1);
@@ -24,27 +27,39 @@ else
 end
 
 A_nodedist = sum(A_dist.*A)./sum(A,1);
+Nnodes = length(A);
 
 for j = 1:Nparams       
     p = P(j,:);
-
-        if INSTANCES == 1
-
-       for k = 1:INSTANCES
+    
+        maxks = zeros(INSTANCES,1);
+        KSvals = zeros(INSTANCES,4);
+        deg = zeros(INSTANCES,Nnodes);
+        clu = zeros(INSTANCES,Nnodes);
+        bet = zeros(INSTANCES,Nnodes);
+        elen = zeros(INSTANCES,Nnodes);
+        ctemp = zeros(INSTANCES,4);
         
-        [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
+        if ~useParfor || INSTANCES == 1
+
+         for k = 1:INSTANCE
+            % b is input into CV_output.Net and is expected to be a cell,
+            % where as [~,b] = GrowthModel is an array
+            b = cell(1);
         
-        [maxks(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals] = Betzel_energy(A,A_dist,B);
-                deg(k,:) = NodeVals{1};
-                clu(k,:) = NodeVals{2};
-                bet(k,:) = NodeVals{3};
-                elen(k,:) = sum(A_dist.*B)./deg(k,:);
-                for iii = 1:3
-                ctemp(k,iii) = corr(A_topo_temp{iii},NodeVals{iii},'Type','Spearman');
-                end
-                ctemp(k,4) = corr(A_nodedist',elen(k,:)','Type','Spearman');
+            [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
+
+            [maxks(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals] = Betzel_energy(A,A_dist,B);
+            deg(k,:) = NodeVals{1};
+            clu(k,:) = NodeVals{2};
+            bet(k,:) = NodeVals{3};
+            elen(k,:) = sum(A_dist.*B)./deg(k,:);
+            for iii = 1:3
+                ctemp(1,iii) = corr(A_topo_temp{iii},NodeVals{iii},'Type','Spearman');
+            end
+            ctemp(k,4) = corr(A_nodedist',elen(k,:)','Type','Spearman');
                 
-       end            
+                   
           
        
         CV_output.Topography{i,j}{1} = deg;
@@ -55,11 +70,12 @@ for j = 1:Nparams
         CV_output.TopographyCorrs{i,j} = ctemp;
         CV_output.KSmax{i,j} = maxks;
 
-        CV_output.Net{i,j} = b;
+        CV_output.net{i,j} = b;
+        
+         end
        
         else
     
-
        parfor k = 1:INSTANCES
         
         [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
@@ -69,16 +85,14 @@ for j = 1:Nparams
                 clu(k,:) = NodeVals{2};
                 bet(k,:) = NodeVals{3};
                 elen(k,:) = sum(A_dist.*B)./deg(k,:);
-                for iii = 1:4
-                
-                if iii == 4
-                  ctemp(k,iii) = corr(A_nodedist',elen(k,:)','Type','Spearman');  
-                else
-                  ctemp(k,iii) = corr(A_topo_temp{iii},NodeVals{iii},'Type','Spearman');  
+                for iii = 1:4     
+                    if iii == 4
+                      ctemp(k,iii) = corr(A_nodedist',elen(k,:)','Type','Spearman');  
+                    else
+                      ctemp(k,iii) = corr(A_topo_temp{iii},NodeVals{iii},'Type','Spearman');  
+                    end
                 end
-                end
-                
-                
+       
        end
         CV_output.Topography{i,j}{1} = deg;
         CV_output.Topography{i,j}{2} = clu;
@@ -88,7 +102,7 @@ for j = 1:Nparams
         CV_output.TopographyCorrs{i,j} = ctemp;
         CV_output.maxKS{i,j} = maxks;
 
-        CV_output.Net{i,j} = b;
+        CV_output.net{i,j} = b;
         end
        
 
@@ -97,3 +111,4 @@ end
 display(['Finished subject ',num2str(i)])
 end
 CV_output.Input = Input;
+CV_output.Nnodes = Nnodes;

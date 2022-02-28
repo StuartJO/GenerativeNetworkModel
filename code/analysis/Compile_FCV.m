@@ -1,152 +1,176 @@
-function [Fcv,NETS] = Compile_FCV(fileformat,mdls,Iters,nsub,N)
+function CV = Compile_FCV(fileformat,mdls,Iters,nsub,SaveNets)
 
-if ~contains(fileformat,'$')
-    NoIterFiles = 1;
+% This function allows you to compile CV results into a single output.
+%
+% Inputs:
+%
+% fileformat = a string giving the format of the file to load in.
+% Because the output of CV scripts is done for different models and
+% different iterations, you can use '#' to signify a model number in the
+% file format, and '$' to indicate the iteration number. For example:
+%
+% Note that this script assumes each model is its own file. It is optional
+% as to whether many files of different iterations have been made (i.e., if
+% all iterations were saved to the one file already, this script will
+% handle that, just don't include '$' in the fileformat). Also this script
+% assumes the model number comes before the iteration number
+%
+% mdls = an array indicating which number models to include, and the order.
+% mdls = [1 5 4] woudl include the models numbers 1, 5 and 4 in that order
+%
+% Iters = a scaler or 1*2 array. The scaler indicates the number of
+% iterations in each file if '$' is included in the fileformat, or the
+% number of iteration files otherwise. If an array, the first value
+% indiates the number of iteration files and the second the number of 
+% iterations in each file
+%
+% nsub = the number of subjects for whom cross validation was performed.
+%
+% SaveNets = set to 1 to save all the networks produced by crossvalidation
+% on top of all the statistic (0 by default).
 
-filesubind1 = strfind(fileformat,'#');
-file_start = fileformat(1:filesubind1-1);
-
-file_end = fileformat(filesubind1+1:end);
-nperIter = Iters;
-iters2use = 1;
-else
-    NoIterFiles = 0;
-
-filesubind1 = strfind(fileformat,'#');
-file_start = fileformat(1:filesubind1-1);
-
-filesubind2 = strfind(fileformat,'$');
-file_middle = fileformat(filesubind1+1:filesubind2-1);
-file_end = fileformat(filesubind2+1:end);
-nperIter = 1;
-iters2use = 1:Iters;
+if nargin < 5
+    SaveNets = 0;
 end
 
+% Checks if there are multiple iteration files
+if ~contains(fileformat,'$')
+    % Multiple iteration files do not exist
+    NoIterFiles = 1;
 
+    % divide the fileformat string into sections based on the position of
+    % the '#' character
+    filesubind1 = strfind(fileformat,'#');
+    file_start = fileformat(1:filesubind1-1);
 
-addpath /projects/kg98/stuarto/BCT
+    file_end = fileformat(filesubind1+1:end);
+    
+    nperIterFile = Iters;
+    IterFiles = 1;
+else
+    % Multiple iteration files do exist
+    NoIterFiles = 0;
 
-%nsub = 100;
+    % divide the fileformat string into sections based on the position of
+    % the '#' and '$' characters
+    filesubind1 = strfind(fileformat,'#');
+    file_start = fileformat(1:filesubind1-1);
 
-ntotal = length(iters2use)*nperIter;
+    filesubind2 = strfind(fileformat,'$');
+    
+    if filesubind1 > filesubind2
+       error('model number needs to come before iteration number in the filename!') 
+    end
+    
+    file_middle = fileformat(filesubind1+1:filesubind2-1);
+    file_end = fileformat(filesubind2+1:end);
+    
+    if length(Iters) == 1
+    nperIterFile = 1;
+    IterFiles = 1:Iters;
+    else
+    nperIterFile = Iters(2);
+    IterFiles = 1:Iters(1);        
+    end
+end
 
+nIters = length(IterFiles)*nperIterFile;
 
-
-totalDataPoints = ((nsub*nsub)-nsub)*Iters;
+totalFcvDataPoints = ((nsub*nsub)-nsub)*nIters;
 
 Mdsl2Compile = length(mdls);
 
 for j = 1:Mdsl2Compile
-%     for k = 1:4
-% Fcv.Topography{j}{k} = zeros(99*99*20,N);
-% end
-%     Fcv.DataID{j} = zeros(99*99*20,3);
     tic
-tic
-PointsPerIter = ((nsub*nsub)-nsub)*nperIter;
-     data = zeros(nsub,nsub,ntotal);
-     nets = cell(nsub,nsub);
+    PointsPerIter = ((nsub*nsub)-nsub)*nperIterFile;
+    data = zeros(nsub,nsub,nIters);
+    if SaveNets
+        nets = cell(nsub,nsub);
+    end
+    CV.KS{j} = zeros(totalFcvDataPoints,4);
+    CV.TopographyCorrs{j} = zeros(totalFcvDataPoints,4);
+    CV.DataID{j} = zeros(totalFcvDataPoints,3);
+    Topography = cell(1,4);
     
-%      for k = 1:4
-%            Fcv.Topography{j}{k} = zeros(totalDataPoints,N);
-%      end 
-     Fcv.KS{j} = zeros(totalDataPoints,4);
-     Fcv.TopographyCorrs{j} = zeros(totalDataPoints,4);
-     Fcv.DataID{j} = zeros(totalDataPoints,3);
-     ind = 1:nperIter;
+    ind = 1:nperIterFile;
      
-     for l = 1:length(iters2use)%1:5
-         if NoIterFiles
-            CVdata = load([file_start,num2str(mdls(j)),file_end]);
-         else
-            CVdata = load([file_start,num2str(mdls(j)),file_middle,num2str(l),file_end]) ;   
-         end
-     for k = 1:4
-           Topography{k}{l} = zeros(PointsPerIter,N);
-     end          
-    topo_ind = 1:nperIter;
-   % i is the subjects network
-   for i = 1:nsub
-       %ii is parameter
-       for ii = 1:nsub
-        if i == ii
-                data(i,ii,[1:nperIter]+(nperIter*(l-1))) = nan(1,nperIter);
-               
+    for itr = 1:length(IterFiles)
+        if NoIterFiles
+           CVindata = load([file_start,num2str(mdls(j)),file_end]);
         else
-                data(i,ii,[1:nperIter]+(nperIter*(l-1))) = CVdata.KSmax{i,ii};
-              for k = 1:4
-           %Fcv.Topography{j}{k}(ind,:) = CVdata.Topography{i,ii}{k}(1:nperIter,:);
-           Topography{k}{l}(topo_ind,:) = CVdata.Topography{i,ii}{k}(1:nperIter,:);
-              end 
-                Fcv.KS{j}(ind,:) = CVdata.KS{i,ii}(1:nperIter,:);
-                Fcv.TopographyCorrs{j}(ind,:) = CVdata.TopographyCorrs{i,ii}(1:nperIter,:);
-                Fcv.DataID{j}(ind,:) = [i ii l];
-                
-                ind = ind + nperIter;
-                topo_ind = topo_ind+nperIter;
+           CVindata = load([file_start,num2str(mdls(j)),file_middle,num2str(itr),file_end]) ;   
         end
         
-        nets{i,ii}([1:nperIter]+(nperIter*(l-1))) = CVdata.Net{i,ii};
+        Nnodes = CVindata.Nnodes;
         
+    for t = 1:4
+          Topography{t}{itr} = zeros(PointsPerIter,Nnodes);
+    end          
+   topo_ind = 1:nperIterFile;
+       % sub_n indicates that index corresponds to the subject network
+       for sub_n = 1:nsub
+           %sub_n indicates that index corresponds to the subject parameter
+            for sub_P = 1:nsub
+            if sub_n == sub_P
+                % CV should not include the subjects own parameters applied to
+                % their own network. We set the respective indicies to nan
+                data(sub_n,sub_P,(1:nperIterFile)+(nperIterFile*(itr-1))) = nan(1,nperIterFile);       
+            else
+                data(sub_n,sub_P,(1:nperIterFile)+(nperIterFile*(itr-1))) = CVindata.KSmax{sub_n,sub_P};
+                
+ % You might wonder why I don't directly put the topography data direct
+ % into the output structure, like I do with all the other outputs. The
+ % reason is simple/dumb. For whatever reason, when I try do it
+ % directly, this function slows down by an order of magnitude. Even if
+ % I initalise Fcv.Topography, it still does not work. However, if I define
+ % a variable (in this case "Topography"), write to that, and then
+ % put that into the output structure, well that just works fine. This is 
+ % very much a case of "If it is stupid but it works...."                
+                
+                for t = 1:4
+                    Topography{t}{itr}(topo_ind,:) = CVindata.Topography{sub_n,sub_P}{t}(1:nperIterFile,:);
+                end 
+                
+                % Save all the KS and correlation data into a huge array
+                CV.KS{j}(ind,:) = CVindata.KS{sub_n,sub_P}(1:nperIterFile,:);
+                CV.TopographyCorrs{j}(ind,:) = CVindata.TopographyCorrs{sub_n,sub_P}(1:nperIterFile,:);
+                % CV.DataID gives a "barcode" indicating which network,
+                % which set of parameters and for which iteration that
+                % respective data belongs to
+                CV.DataID{j}(ind,:) = [sub_n sub_P itr];
+
+                ind = ind + nperIterFile;
+                topo_ind = topo_ind+nperIterFile;
+            end
+            
+            if SaveNets
+                nets{sub_n,sub_P}((1:nperIterFile)+(nperIterFile*(itr-1))) = CVindata.Net{sub_n,sub_P};
+            end
+            
+           end
+
        end
-        
-   end
    
-     end
+    end
      
+% "...it ain't stupid"     
      topo_ind2 = 1:PointsPerIter;
-     for l = 1:length(iters2use)
-         for k = 1:4
-     Fcv.Topography{j}{k}(topo_ind2,:) = Topography{k}{l};
+     for itr = 1:length(IterFiles)
+         for t = 1:4
+            CV.Topography{j}{t}(topo_ind2,:) = Topography{t}{itr};
          end
-     topo_ind2 = topo_ind2+PointsPerIter;
+        topo_ind2 = topo_ind2+PointsPerIter;
      end
     clear Topography
 
-%	[minIter,minIterInd] = nanmin(data,[],3);
-% 
-%    for i = 1:nsub
-% 
-% 	[~,BEST_PARAM] = nanmin(minIter(i,:));
-% 	
-% 	[~,BEST_NET_IND] = nanmin(squeeze(data(i,BEST_PARAM,:)));
-% 
-% 	Fcv.bestnet{j}{i} = nets{i,BEST_PARAM}{BEST_NET_IND};
-% 
-%    end
-%    
-%    display(['Finding best networks'])
-% 
-%    bestNetPerParam = cell(1,nsub);
-%   for i = 1:100
-%     ITER = 1;
-%     for ii = 1:100
-%         if ii ~= i
-%         	bestNetPerParam{i}{ITER} = nets{i,ii}{minIterInd(i,ii)};
-%         	ITER = ITER + 1;
-%         end
-%     end
-%   end
-
-
-
-
-
         timesec = toc;
         disp(['Finished ',num2str(j),' in ',num2str(timesec),' seconds'])
-
-   NETS{j} = nets;
-   Fcv.SUBDATA{j} = data;
-   %Fcv.corr{j} = cdata;
-   %Fcv.minmin{j} = nanmin(nanmin(data,[],3),[],2)';
-   Fcv.Fcv{j} = nanmean(nanmean(data,3),2)'; 
-   %Fcv.meanmin{j} = nanmean(nanmin(data,[],3),2)';
-   %Fcv.minmean{j} = nanmin(nanmean(data,3),[],2)'; 
-   %Fcv.MinParamNet{j} = bestNetPerParam;
-   Fcv.P{j} = CVdata.P;
-   
-   %Fcv.corr_maxmax{j} = nanmax(nanmax(cdata,[],3),[],2)';
-   %Fcv.Fcv_corr{j} = nanmean(nanmean(cdata,3),2)'; 
-   %Fcv.corr_meanmax{j} = nanmean(nanmax(cdata,[],3),2)';
-   %Fcv.corr_maxmean{j} = nanmax(nanmean(cdata,3),[],2)'; 
+        
+    if SaveNets
+    	CV.nets{j} = nets;
+    end
+    % Take the mean over all iterations, and then take the mean over all
+    % the parameters applied to a given subject
+   CV.Fcv{j} = nanmean(nanmean(data,3),2)'; 
+   CV.P{j} = CVindata.P;
 end
