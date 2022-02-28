@@ -1,5 +1,9 @@
 function runGenPhysMdlCV(PARC,GROWTH,MdlNum,ITER)
 
+output_location = '/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Crossvalidated/';
+
+input_compiled_data_location = '/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/';
+
 if PARC == 1
     mdldata = load('random200_data4physmdl.mat');
     parcname = 'random200';
@@ -127,7 +131,7 @@ PD = [];
 
 end
 
-Mdlouts = load([parcname,'_PhysMdls_Growth_',num2str(GROWTH),'_output.mat']);
+Mdlouts = load([input_compiled_data_location,parcname,'_PhysMdls_Growth_',num2str(GROWTH),'_output.mat']);
 
 Input = Mdlouts.Inputs{MdlNum};
 Input.NNodes = length(A_dist);  
@@ -135,7 +139,5 @@ P = Mdlouts.OptimMdl{MdlNum}.min_maxKS.P;
 Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);
 
 Fcv.P = P;
-
-output_location = '/fs02/hf49/Stuart/GrowthModel_newParc/Paper_schaefer_mdls/Crossvalidated/';
 
 save([output_location,'CrossValidate_',parcname,'_PhysMdls_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')
