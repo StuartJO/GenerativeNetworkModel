@@ -24,7 +24,7 @@ filename = [file_start,num2str(i),file_end];
 if exist(filename) == 2
 
     filedata = load(filename);
-    Nmdls = length(filedata.E);
+    Nmdls = length(filedata.maxKS);
         for j = 1:Nmdls
             
         tic
