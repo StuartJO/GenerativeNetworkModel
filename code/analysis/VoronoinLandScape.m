@@ -1,4 +1,4 @@
-function [maxKS,KS,P,b,C] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input)
+function [maxKS,KS,P,b,DegCorr] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input)
 
 % This function will perform optimisation using a Voronoi tessellation
 % approach, where from an initial set of random points in parameter space,
@@ -25,7 +25,7 @@ totalsamples = ndraw*nlvl;
 % Initalise output variables
 P = zeros(totalsamples,5);
 maxKS = zeros(totalsamples,1);
-C = zeros(totalsamples,1);
+DegCorr = zeros(totalsamples,1);
 KS = zeros(totalsamples,numProperties);
 powvals = linspace(0,pow,nlvl);
 b = cell(1,totalsamples);
@@ -83,7 +83,7 @@ for ilvl = 1:nlvl
         
         maxKS(indnew) = maxKSpar;
         KS(indnew,:) = KSpar;
-        C(indnew) = Cpar;
+        DegCorr(indnew) = Cpar;
         b(indnew) = btemp;
         
     else
@@ -92,7 +92,7 @@ for ilvl = 1:nlvl
             indHere = indnew(i);
             [B,b{indHere}] = GrowthModel(PD1,PD2,ptsnew(i,:),m,Input);
             [maxKS(indHere),KS(indHere,:)] = Betzel_energy(A,A_dist,B);
-            C(indHere) = corr(sum(B)',ADeg','Type','Spearman');
+            DegCorr(indHere) = corr(sum(B)',ADeg','Type','Spearman');
         end
     
     end

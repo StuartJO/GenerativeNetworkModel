@@ -1,27 +1,28 @@
 function runGenTopoMdlCV(TYPE,GROWTH,MdlNum,ITER)
 
-Input.Growth = GROWTH;
-Input.DistFunc = 'exponential';
-Input.IndvDist = 0;
-Input.GeneFunc = 'powerlaw';
-
-Input.normsum = 0;
+% Input.Growth = GROWTH;
+% Input.DistFunc = 'exponential';
+% Input.IndvDist = 0;
+% Input.GeneFunc = 'powerlaw';
+% Input.normsum = 0;
 
 if TYPE == 1
-    Input.AddMult = 'Mult';
+%    Input.AddMult = 'Mult';
     fileoutname = 'mult2';
    
 elseif TYPE == 2
-    Input.AddMult = 'Add';
+%    Input.AddMult = 'Add';
     fileoutname = 'add2';
     
 elseif TYPE == 3
-Input.AddMult = 'Add';
+%   Input.AddMult = 'Add';
 fileoutname = 'add3';
     
 end
 
 Mdlouts = load(['Revisedmdls_',fileoutname,'_Growth_',num2str(GROWTH),'_output.mat']);
+
+Input = Mdlouts.Input{MdlNum};
 
 addpath /projects/kg98/stuarto/BCT
 
@@ -38,15 +39,6 @@ else
 end   
 
 PD = [];
-
-Input.ModelNum=MdlNum;
-if TYPE == 2
-    if ismember(MdlNum,[4 6 7 9 11 12 13])
-        Input.ParamRange(3,:) = [0 .05];
-    else
-       Input.ParamRange(3,:) = [0 8]; 
-    end
-end
 
 P = Mdlouts.MinMdlFitParams{MdlNum};
 Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);

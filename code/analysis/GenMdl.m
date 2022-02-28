@@ -11,6 +11,9 @@ function Output = GenMdl(A,A_dist,PD1,PD2,Input)
 % interaction (e.g., PD1^eta) can be replaced with an exponential function
 % (e.g., exp(eta*PD1)).
 %
+% See the bottom of this header as to the model form appears different to 
+% what is in the paper/why there are seemingly more than 3 free parameters
+%
 % Teachnically, this function is a wrapper for another function
 % (GrowthModel) which itself is a wrapper for functions which actually run
 % the generative model. Turtles all the way down.
@@ -61,40 +64,44 @@ function Output = GenMdl(A,A_dist,PD1,PD2,Input)
 %       ParamRange(4,:) = a2
 %       ParamRange(5,:) = lam
 %
+%
 % The following are optional specifications for Input (will be set to
-% defaults):
+% defaults if not set):
 %
 % PD1_Func = 'power-law' or 'exponential'. Controls the interaction between
-% PD1 and eta
+% PD1 and eta. Defaults to 'exponential'
 %
 % T_Func = 'power-law' or 'exponential'. Controls the interaction between T
-% and eta
+% and eta. Defaults to 'power-law'
 %
 % PD2_Func = 'power-law' or 'exponential'. Controls the interaction between
-% PD2 and lam
+% PD2 and lam. Defaults to 'power-law'
 %
-% See the bottom 
+% epsilon = an amount to add to each edges topology value in the model (to
+% ensure each edge doesn't become undefinied). Defaults to 0 when 
+% Input.AddMult = 'Add' or 1e-6 when Input.AddMult = 'Mult'
 %
-% You may wonder why there are 5 possible parameters but we only ever talk
-% about a max of three in the paper. Very simply, topology and PC require
-% seperate configuration of their parameters, and it was far easier to keep
-% track of what is what if all parameter variables were set up the same. SO
-% while functionally the parameters in the topological and PC models are
-% the same, practically they appear different. This however does mean you
-% can do a model with all 5 parameters...
-
+% You may wonder why the model has a different form to what we report in
+% the paper e.g., (D^eta)+a(T^gam) or (D^eta)+a(PC^gam) etc. Simply,
+% because a) we never run a model with distance + topology + gene, b) we
+% wanted to avoid discussing too many parameters because that would get
+% confusing quick and readers would find it difficult to keep track of, and
+% c) topology and PC require seperate configuration of their parameters the
+% way the model is coded. So while the parameters in the topological and PC
+% models perform the same function theoretically, practically they are
+% different. This however does mean you can run a model with all 5 
+% parameters...(good luck getting the optimisation to work!)
+%
 % Another question you may have is why the ParamRange variable is ordered in
 % this way i.e., two exponents, then the two alpha values, then an
 % exponent. The simple answer is this just follows the order in which the
 % function developed over time. eta and gamma are the OG parameters so they
 % come first. We tried a simple model using only alpha for the topology
-% term so that came third. Then we added the PD term, which we first tried 
+% term so that came third. Then we added the PD2 term, which we first tried 
 % with just an alpha value (4th), then with its own exponent as well (5th).
-% In the paper 
 
 rng('shuffle')
 
- %end
 if ~isfield(Input,'epsilon')
     switch Input.AddMult
     case 'Add'
@@ -109,7 +116,13 @@ if ~isfield(Input,'normsum')
 end
 
 TopoTypes = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
-Input.TopoType = TopoTypes{Input.ModelNum};
+if ~isfield(Input,'TopoTypes') 
+ Input.TopoType = TopoTypes{Input.ModelNum};
+else
+   if ~strcmp(TopoTypes{Input.ModelNum},Input.TopoType) 
+      error('Input.ModelNum and Input.TopoType do not match!')
+   end
+end
 
 % Basically this assumes you want the same number of edges formed for each
 % of the input distance matrices.
@@ -122,30 +135,52 @@ else
     [~,~,m] =  density_und(A); 
 end
 
-[maxKS,KS,P,b] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input);
+[maxKS,KS,P,b,DegCorr] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input);
 
     [~,I] = min(maxKS);     
     P_optim = P(I,:);
-    b_optim = cell(1,100);
+    optim_b = cell(1,100);
 
-        maxKS_optim = zeros(1,100);
-        KS_optim = zeros(100,4);
-        %C_optim = zeros(1,100);
+        optim_maxKS = zeros(1,100);
+        optim_KS = zeros(100,4);
+        optim_DegCorr = zeros(1,100);
        parfor k = 1:100
-        [B,b_optim{k}] = GrowthModel(PD1,PD2,P_optim,m,Input);
-           [maxKS_optim(k), KS_optim(k,:)] = Betzel_energy(A,A_dist,B);
-            %C_optim(k) = corr(sum(B)',sum(A)','Type','Spearman');
+        [B,optim_b{k}] = GrowthModel(PD1,PD2,P_optim,m,Input);
+           [optim_maxKS(k), optim_KS(k,:)] = Betzel_energy(A,A_dist,B);
+            optim_DegCorr(k) = corr(sum(B)',sum(A)','Type','Spearman');
        end      
-      
+
+        [~,I] = max(maxKS);     
+        bestDegCorr_P = P(I,:);
+        bestDegCorr_b = cell(1,100);
+
+        optim_maxKS = zeros(1,100);
+        optim_KS = zeros(100,4);
+        bestDegCorr_DegCorr = zeros(1,100);
+       parfor k = 1:100
+        [B,bestDegCorr_b{k}] = GrowthModel(PD1,PD2,bestDegCorr_P,m,Input);
+           [bestDegCorr_maxKS(k), bestDegCorr_KS(k,:)] = Betzel_energy(A,A_dist,B);
+            bestDegCorr_DegCorr(k) = corr(sum(B)',sum(A)','Type','Spearman');
+       end   
+       
 Output.maxKS = maxKS;
+Output.DegCorr = DegCorr;
 Output.KS = KS;
 Output.P = P;
 Output.b = b;
-Output.maxKS_optim = maxKS_optim;
-Output.KS_optim = KS_optim;
-Output.b_optim = b_optim;
+
+Output.optim_maxKS = optim_maxKS;
+Output.optim_KS = optim_KS;
+Output.optim_b = optim_b;
+Output.optim_DegCorr = optim_DegCorr;
+
+Output.bestDegCorr_maxKS = bestDegCorr_maxKS;
+Output.bestDegCorr_KS = bestDegCorr_KS;
+Output.bestDegCorr_b = bestDegCorr_b;
+Output.bestDegCorr_DegCorr = bestDegCorr_DegCorr;
 
 % Save the input configurations to output. Helps to keep track of what was
 % done
 Output.Input = Input;
+Output.Input.Nnodes = length(A);
 
