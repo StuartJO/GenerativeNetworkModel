@@ -50,9 +50,9 @@ if exist(filename) == 2
 
         Mdlouts.BestMdls{j}.max_DegCorr.repeats.maxKS{IND} = filedata.bestDegCorr_maxKS{j};
         Mdlouts.BestMdls{j}.max_DegCorr.repeats.DegCorr{IND} = filedata.bestDegCorr_DegCorr{j};
-        Nodes = filedata.Input{j}.NNodes;
+        
             if savenets == 1
-
+            Nodes = filedata.Input{j}.NNodes;
             Asim = zeros(Nodes);
             Asim(filedata.b{j}{min_maxKS_ind}) = 1;
             Asim = Asim + Asim';
@@ -64,7 +64,7 @@ if exist(filename) == 2
             Mdlouts.OptimMdls{j}.net{j}{IND} =  Asim;
 
             elseif savenets == 2
-                
+            Nodes = filedata.Input{j}.NNodes;    
             Asim = zeros(Nodes);
             Asim(filedata.b{j}{min_maxKS_ind}) = 1;
             Asim = Asim + Asim';

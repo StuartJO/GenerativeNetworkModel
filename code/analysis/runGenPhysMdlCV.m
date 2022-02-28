@@ -15,7 +15,7 @@ display(['Performing cross-validation for ',parcname,', phys growth ',num2str(GR
 
 adjs = mdldata.adjs;
 A_dist = mdldata.A_dist;
-    
+  
 if GROWTH
     D = mdldata.dists;
 else
@@ -130,7 +130,7 @@ end
 Mdlouts = load([parcname,'_PhysMdls_Growth_',num2str(GROWTH),'_output.mat']);
 
 Input = Mdlouts.Inputs{MdlNum};
-
+Input.NNodes = length(A_dist);  
 P = Mdlouts.OptimMdl{MdlNum}.min_maxKS.P;
 Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);
 
