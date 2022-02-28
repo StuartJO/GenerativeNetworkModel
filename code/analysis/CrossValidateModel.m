@@ -39,13 +39,11 @@ for j = 1:Nparams
         bet = zeros(INSTANCES,Nnodes);
         elen = zeros(INSTANCES,Nnodes);
         ctemp = zeros(INSTANCES,4);
+        b = cell(1,INSTANCES);
         
         if ~useParfor || INSTANCES == 1
 
-         for k = 1:INSTANCE
-            % b is input into CV_output.Net and is expected to be a cell,
-            % where as [~,b] = GrowthModel is an array
-            b = cell(1);
+         for k = 1:INSTANCE            
         
             [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
 
@@ -58,10 +56,7 @@ for j = 1:Nparams
                 ctemp(1,iii) = corr(A_topo_temp{iii},NodeVals{iii},'Type','Spearman');
             end
             ctemp(k,4) = corr(A_nodedist',elen(k,:)','Type','Spearman');
-                
-                   
-          
-       
+                       
         CV_output.Topography{i,j}{1} = deg;
         CV_output.Topography{i,j}{2} = clu;
         CV_output.Topography{i,j}{3} = bet;
@@ -105,8 +100,6 @@ for j = 1:Nparams
         CV_output.net{i,j} = b;
         end
        
-
-
 end
 display(['Finished subject ',num2str(i)])
 end

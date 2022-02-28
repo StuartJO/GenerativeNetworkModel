@@ -91,11 +91,6 @@ function Output = GenMdl(A,A_dist,PD1,PD2,Input)
 % term so that came third. Then we added the PD term, which we first tried 
 % with just an alpha value (4th), then with its own exponent as well (5th).
 % In the paper 
-etaRange = Input.ParamRange(1,:);
-gamRange = Input.ParamRange(2,:);
-lamRange = Input.ParamRange(5,:);
-a1Range = Input.ParamRange(3,:);
-a2Range = Input.ParamRange(4,:);
 
 rng('shuffle')
 
@@ -126,12 +121,6 @@ if iscell(PD1) == 1 && length(PD1) > 1
 else
     [~,~,m] =  density_und(A); 
 end
-
-%Input.ndraw = 10;
-% Input.ndraw = 2000;
-% Input.pow = 2;
-% Input.nlvl = 5;
-% Input.useParFor = 1;
 
 [maxKS,KS,P,b] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input);
 
