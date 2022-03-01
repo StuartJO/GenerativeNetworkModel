@@ -19,7 +19,7 @@ for i = 1:Nsubs
 A = double(adjs{i}>0);
 
 if iscell(PD1) == 1
-    Steps = length(D);
+    Steps = length(PD1);
     [~,~,nedges] = density_und(A);
     m = round(linspace(nedges/Steps,nedges,Steps));
 else
