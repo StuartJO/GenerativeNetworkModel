@@ -103,10 +103,10 @@ for j = 1:Mdsl2Compile
            CVindata = load([file_start,num2str(mdls(j)),file_middle,num2str(itr),file_end]) ;   
         end
         
-        Nnodes = CVindata.Nnodes;
+        NNodes = CVindata.Input.NNodes;
         
     for t = 1:4
-          Topography{t}{itr} = zeros(PointsPerIter,Nnodes);
+          Topography{t}{itr} = zeros(PointsPerIter,NNodes);
     end          
    topo_ind = 1:nperIterFile;
        % sub_n indicates that index corresponds to the subject network
@@ -154,7 +154,7 @@ for j = 1:Mdsl2Compile
        end
    
     end
-     
+     CV.Inputs{j} = CVindata.Input;
 % "...it ain't stupid"     
      topo_ind2 = 1:PointsPerIter;
      for itr = 1:length(IterFiles)

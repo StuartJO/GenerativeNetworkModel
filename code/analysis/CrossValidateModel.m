@@ -27,17 +27,17 @@ else
 end
 
 A_nodedist = sum(A_dist.*A)./sum(A,1);
-Nnodes = length(A);
+NNodes = length(A);
 
 for j = 1:Nparams       
     p = P(j,:);
     
         maxks = zeros(INSTANCES,1);
         KSvals = zeros(INSTANCES,4);
-        deg = zeros(INSTANCES,Nnodes);
-        clu = zeros(INSTANCES,Nnodes);
-        bet = zeros(INSTANCES,Nnodes);
-        elen = zeros(INSTANCES,Nnodes);
+        deg = zeros(INSTANCES,NNodes);
+        clu = zeros(INSTANCES,NNodes);
+        bet = zeros(INSTANCES,NNodes);
+        elen = zeros(INSTANCES,NNodes);
         ctemp = zeros(INSTANCES,4);
         b = cell(1,INSTANCES);
         
@@ -104,4 +104,4 @@ end
 display(['Finished subject ',num2str(i)])
 end
 CV_output.Input = Input;
-CV_output.Nnodes = Nnodes;
+CV_output.Input.NNodes = NNodes;
