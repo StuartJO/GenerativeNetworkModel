@@ -43,7 +43,7 @@ for j = 1:Nparams
         
         if ~useParfor || INSTANCES == 1
 
-         for k = 1:INSTANCE            
+         for k = 1:INSTANCES            
         
             [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
 
