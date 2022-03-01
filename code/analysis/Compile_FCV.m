@@ -28,6 +28,8 @@ function CV = Compile_FCV(fileformat,mdls,Iters,nsub,SaveNets)
 %
 % SaveNets = set to 1 to save all the networks produced by crossvalidation
 % on top of all the statistic (0 by default).
+%
+% Output:
 
 if nargin < 5
     SaveNets = 0;
