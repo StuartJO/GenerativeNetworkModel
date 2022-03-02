@@ -1,12 +1,4 @@
-function runGenPhysMdl(SUB,GROWTH,PARC,SAVEDIR,MDLS)
-
-if nargin < 4
-   SAVEDIR = './'; 
-end
-
-if nargin < 5
-    MDLS = 1:10;
-end
+function RerunGenPhysMdl(SUB,GROWTH,PARC)
 
 Input.Growth = GROWTH;
 Input.PD1Func = 'exponential';
@@ -32,6 +24,8 @@ mdldata = load('random200_data4physmdl_18timepoints.mat');
 parcname = 'random200_18tps';    
 end
 
+Outputs = load(['/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Optimisation/',PARC,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat']);
+
 A = double(mdldata.adjs{SUB}>0);
 
 A_dist = mdldata.A_dist;
@@ -42,7 +36,7 @@ else
     D = A_dist;
 end   
     
-MDLIND = 1;
+MDLS = [2 4];
 
 for MDL = MDLS
 
@@ -253,25 +247,19 @@ end
 
 Output = GenMdl(A,A_dist,D,PD,Input);
 
-if length(MDLS) > 1
-    Outputs.maxKS{MDLIND} = Output.maxKS;
-    Outputs.KS{MDLIND} = Output.KS;
-    Outputs.P{MDLIND} = Output.P;
-    Outputs.b{MDLIND} = Output.b;
-    Outputs.maxKS_optim{MDLIND} = Output.maxKS_optim;
-    Outputs.KS_optim{MDLIND} = Output.KS_optim;
-    Outputs.b_optim{MDLIND} = Output.b_optim;
+
+    Outputs.maxKS{MDL} = Output.maxKS;
+    Outputs.KS{MDL} = Output.KS;
+    Outputs.P{MDL} = Output.P;
+    Outputs.b{MDL} = Output.b;
+    Outputs.maxKS_optim{MDL} = Output.maxKS_optim;
+    Outputs.KS_optim{MDL} = Output.KS_optim;
+    Outputs.b_optim{MDL} = Output.b_optim;
 
 % Save the input configurations to output. Helps to keep track of what was
 % done
-Outputs.Input{MDLIND} = Output.Input;
-    MDLIND = MDLIND + 1;
+Outputs.Input{MDL} = Output.Input;
 end
 
-end
+save(['/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Optimisation/',PARC,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Outputs','-v7.3')
 
-if length(MDLS) > 1
-    save([SAVEDIR,parcname,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Outputs','-v7.3')
-else
-    save([SAVEDIR,parcname,'_PhysMdls_Mdl_',num2str(MDL),'_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Output','-v7.3')
-end
