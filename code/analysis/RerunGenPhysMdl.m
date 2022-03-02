@@ -246,23 +246,23 @@ Input.ParamRange(3,:) = [0 8];
 Input.ParamRange(4,:) = [0 0];    
 end
 
-Output = GenMdl(A,A_dist,D,PD,Input);
+Outputs = GenMdl(A,A_dist,D,PD,Input);
 
-Output.maxKS{MDL} = Output.maxKS;
-Output.DegCorr{MDL} = Output.DegCorr;
-Output.KS{MDL} = Output.KS;
-Output.P{MDL} = Output.P;
-Output.b{MDL} = Output.b;
+Outputs.maxKS{MDL} = Output.maxKS;
+Outputs.DegCorr{MDL} = Output.DegCorr;
+Outputs.KS{MDL} = Output.KS;
+Outputs.P{MDL} = Output.P;
+Outputs.b{MDL} = Output.b;
 
-Output.optim_maxKS{MDL} = Output.optim_maxKS;
-Output.optim_KS{MDL} = Output.optim_KS;
-Output.optim_b{MDL} = Output.optim_b;
-Output.optim_DegCorr{MDL} = Output.optim_DegCorr;
+Outputs.optim_maxKS{MDL} = Output.optim_maxKS;
+Outputs.optim_KS{MDL} = Output.optim_KS;
+Outputs.optim_b{MDL} = Output.optim_b;
+Outputs.optim_DegCorr{MDL} = Output.optim_DegCorr;
 
-Output.bestDegCorr_maxKS{MDL} = Output.bestDegCorr_maxKS;
-Output.bestDegCorr_KS{MDL} = Output.bestDegCorr_KS;
-Output.bestDegCorr_b{MDL} = Output.bestDegCorr_b;
-Output.bestDegCorr_DegCorr{MDL} = Output.bestDegCorr_DegCorr;
+Outputs.bestDegCorr_maxKS{MDL} = Output.bestDegCorr_maxKS;
+Outputs.bestDegCorr_KS{MDL} = Output.bestDegCorr_KS;
+Outputs.bestDegCorr_b{MDL} = Output.bestDegCorr_b;
+Outputs.bestDegCorr_DegCorr{MDL} = Output.bestDegCorr_DegCorr;
 
 % Save the input configurations to output. Helps to keep track of what was
 % done
