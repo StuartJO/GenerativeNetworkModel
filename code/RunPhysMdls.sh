@@ -1,7 +1,7 @@
 #!/bin/env bash
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=5
 #SBATCH -t 10:0:0
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-type=BEGIN
