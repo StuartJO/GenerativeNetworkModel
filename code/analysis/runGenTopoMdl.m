@@ -103,13 +103,21 @@ if TYPE == 2
 end
 Output = GenMdl(A,A_dist,D,[],Input);
 
-Outputs.maxKS{i} = Output.maxKS;
-Outputs.KS{i} = Output.KS;
-Outputs.P{i} = Output.P;
-Outputs.b{i} = Output.b;
-Outputs.maxKS_optim{i} = Output.maxKS_optim;
-Outputs.KS_optim{i} = Output.KS_optim;
-Outputs.b_optim{i} = Output.b_optim;
+Output.maxKS{i} = Output.maxKS;
+Output.DegCorr{i} = Output.DegCorr;
+Output.KS{i} = Output.KS;
+Output.P{i} = Output.P;
+Output.b{i} = Output.b;
+
+Output.optim_maxKS{i} = Output.optim_maxKS;
+Output.optim_KS{i} = Output.optim_KS;
+Output.optim_b{i} = Output.optim_b;
+Output.optim_DegCorr{i} = Output.optim_DegCorr;
+
+Output.bestDegCorr_maxKS{i} = Output.bestDegCorr_maxKS;
+Output.bestDegCorr_KS{i} = Output.bestDegCorr_KS;
+Output.bestDegCorr_b{i} = Output.bestDegCorr_b;
+Output.bestDegCorr_DegCorr{i} = Output.bestDegCorr_DegCorr;
 
 % Save the input configurations to output. Helps to keep track of what was
 % done
