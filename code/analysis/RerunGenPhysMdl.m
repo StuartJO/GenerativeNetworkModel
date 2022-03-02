@@ -246,7 +246,7 @@ Input.ParamRange(3,:) = [0 8];
 Input.ParamRange(4,:) = [0 0];    
 end
 
-Outputs = GenMdl(A,A_dist,D,PD,Input);
+Output = GenMdl(A,A_dist,D,PD,Input);
 
 Outputs.maxKS{MDL} = Output.maxKS;
 Outputs.DegCorr{MDL} = Output.DegCorr;
