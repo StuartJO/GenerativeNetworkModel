@@ -144,24 +144,46 @@ end
         optim_maxKS = zeros(1,100);
         optim_KS = zeros(100,4);
         optim_DegCorr = zeros(1,100);
+        
+        if Input.useParfor
+        
        parfor k = 1:100
         [B,optim_b{k}] = GrowthModel(PD1,PD2,P_optim,m,Input);
            [optim_maxKS(k), optim_KS(k,:)] = Betzel_energy(A,A_dist,B);
             optim_DegCorr(k) = corr(sum(B)',sum(A)','Type','Spearman');
-       end      
+       end   
+        else
+         for k = 1:100
+        [B,optim_b{k}] = GrowthModel(PD1,PD2,P_optim,m,Input);
+           [optim_maxKS(k), optim_KS(k,:)] = Betzel_energy(A,A_dist,B);
+            optim_DegCorr(k) = corr(sum(B)',sum(A)','Type','Spearman');
+       end     
+        end
 
         [~,I] = max(maxKS);     
         bestDegCorr_P = P(I,:);
         bestDegCorr_b = cell(1,100);
 
-        optim_maxKS = zeros(1,100);
-        optim_KS = zeros(100,4);
+        bestDegCorr_maxKS = zeros(1,100);
+        bestDegCorr_KS = zeros(100,4);
         bestDegCorr_DegCorr = zeros(1,100);
+        
+        if Input.useParfor
+        
        parfor k = 1:100
         [B,bestDegCorr_b{k}] = GrowthModel(PD1,PD2,bestDegCorr_P,m,Input);
            [bestDegCorr_maxKS(k), bestDegCorr_KS(k,:)] = Betzel_energy(A,A_dist,B);
             bestDegCorr_DegCorr(k) = corr(sum(B)',sum(A)','Type','Spearman');
-       end   
+       end 
+       
+        else
+           for k = 1:100
+        [B,bestDegCorr_b{k}] = GrowthModel(PD1,PD2,bestDegCorr_P,m,Input);
+           [bestDegCorr_maxKS(k), bestDegCorr_KS(k,:)] = Betzel_energy(A,A_dist,B);
+            bestDegCorr_DegCorr(k) = corr(sum(B)',sum(A)','Type','Spearman');
+       end  
+       
+        end
        
 Output.maxKS = maxKS;
 Output.DegCorr = DegCorr;
