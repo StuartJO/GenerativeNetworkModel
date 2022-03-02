@@ -24,7 +24,7 @@ mdldata = load('random200_data4physmdl_18timepoints.mat');
 parcname = 'random200_18tps';    
 end
 
-Outputs = load(['/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Optimisation/',PARC,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat']);
+Outputs = load(['/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Optimisation/',parcname,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat']);
 
 A = double(mdldata.adjs{SUB}>0);
 
@@ -39,6 +39,7 @@ end
 MDLS = [2 4];
 
 for MDL = MDLS
+display(['Performing optimisation for subject ',num2str(SUB),', ',parcname,', phys growth ',num2str(GROWTH),' model number ',num2str(MDL)]);
 
 if MDL == 1
 display(num2str(MDL))
@@ -261,5 +262,5 @@ Output = GenMdl(A,A_dist,D,PD,Input);
 Outputs.Input{MDL} = Output.Input;
 end
 
-save(['/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Optimisation/',PARC,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Outputs','-v7.3')
+save(['/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Optimisation/',parcname,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Outputs','-v7.3')
 
