@@ -1,3 +1,5 @@
-/data/
+/data/OUTPUTS
+/data/OUTPUTS/Optimisation
+/data/OUTPUTS/Crossvalidated
 /SLURM_OUTPUT/
 /Figures/
