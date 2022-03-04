@@ -73,7 +73,7 @@ defaultMdlTypesNames = [];
 addRequired(p,'MdlData',@(x) iscell(x))
 addRequired(p,'MdlNames',@(x) iscell(x))
 addParameter(p,'GrpNames',defaultGrpNames,@(x) iscell(x))
-addParameter(p,'DataLabel',defaultDataLabel,@(x) ischar(x))
+addParameter(p,'DataLabel',defaultDataLabel,@(x) ischar(x) | iscell(x))
 addParameter(p,'MdlTypesInd',defaultMdlTypesInd)
 addParameter(p,'MdlTypesCmap',defaultMdlTypesCmap)
 addParameter(p,'MdlTypesNames',defaultMdlTypesNames)
