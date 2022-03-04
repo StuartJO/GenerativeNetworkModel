@@ -52,28 +52,31 @@ if exist(filename) == 2
         Mdlouts.BestMdls{j}.max_DegCorr.repeats.DegCorr{IND} = filedata.bestDegCorr_DegCorr{j};
         
             if savenets == 1
-            Nodes = filedata.Input{j}.NNodes;
-            Asim = zeros(Nodes);
-            Asim(filedata.b{j}{min_maxKS_ind}) = 1;
-            Asim = Asim + Asim';
-            Mdlouts.OptimMdls{j}.net{IND} = Asim;
-
-            Asim = zeros(Nodes);
-            Asim(filedata.b{j}{max_DegCorr_ind}) = 1;
-            Asim = Asim + Asim';
-            Mdlouts.OptimMdls{j}.net{j}{IND} =  Asim;
-
+%             Nodes = filedata.Input{j}.NNodes;
+%             Asim = zeros(Nodes);
+%             Asim(filedata.b{j}{min_maxKS_ind}) = 1;
+%             Asim = Asim + Asim';
+%             Mdlouts.OptimMdls{j}.net{IND} = Asim;
+% 
+%             Asim = zeros(Nodes);
+%             Asim(filedata.b{j}{max_DegCorr_ind}) = 1;
+%             Asim = Asim + Asim';
+%             Mdlouts.OptimMdls{j}.net{IND} =  Asim;
+            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{min_maxKS_ind};
+            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{max_DegCorr_ind};
             elseif savenets == 2
-            Nodes = filedata.Input{j}.NNodes;    
-            Asim = zeros(Nodes);
-            Asim(filedata.b{j}{min_maxKS_ind}) = 1;
-            Asim = Asim + Asim';
-            Mdlouts.OptimMdls{j}.net{IND} = Asim;
-
-            Asim = zeros(Nodes);
-            Asim(filedata.b{j}{max_DegCorr_ind}) = 1;
-            Asim = Asim + Asim';
-            Mdlouts.OptimMdls{j}.net{j}{IND} =  Asim;
+%             Nodes = filedata.Input{j}.NNodes;
+%             Asim = zeros(Nodes);
+%             Asim(filedata.b{j}{min_maxKS_ind}) = 1;
+%             Asim = Asim + Asim';
+%             Mdlouts.OptimMdls{j}.net{IND} = Asim;
+% 
+%             Asim = zeros(Nodes);
+%             Asim(filedata.b{j}{max_DegCorr_ind}) = 1;
+%             Asim = Asim + Asim';
+%             Mdlouts.OptimMdls{j}.net{IND} =  Asim;
+            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{min_maxKS_ind};
+            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{max_DegCorr_ind};
             
             Mdlouts.nets_edgeind{j}{IND} = filedata.b;
 
