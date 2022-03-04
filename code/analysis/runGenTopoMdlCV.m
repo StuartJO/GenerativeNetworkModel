@@ -20,7 +20,7 @@ fileoutname = 'add3';
     
 end
 
-Mdlouts = load(['Revisedmdls_',fileoutname,'_Growth_',num2str(GROWTH),'_output.mat']);
+Mdlouts = load(['random200_TopoMdls_',fileoutname,'_Growth_',num2str(GROWTH),'_output.mat']);
 
 Input = Mdlouts.Input{MdlNum};
 
@@ -47,4 +47,4 @@ Fcv.P = P;
 
 output_location = '/fs02/hf49/Stuart/GrowthModel_newParc/Paper_topo_mdls/Crossvalidated/';
 
-save([output_location,'CrossValidate_RevisedMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')
+save([output_location,'CrossValidate_random200_TopoMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')

@@ -90,6 +90,8 @@ else
     D = A_dist;
 end
 
+Input.NNodes = length(A_dist);
+
 for i = 1:13
 Input.ModelNum=i;
 if TYPE == 2
