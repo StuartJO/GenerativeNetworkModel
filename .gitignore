@@ -1,4 +1,5 @@
 /data/OUTPUTS
+/data/surface_data
 /data/OUTPUTS/Optimisation
 /data/OUTPUTS/Crossvalidated
 /SLURM_OUTPUT/
