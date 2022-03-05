@@ -141,6 +141,7 @@ for i = 1:length(NETS{j})
 end
 end
 
+figure('Position',[680   320   783   658])
 CompareEdgeLengtheCDF(rand200_data.A_dist,NETS_FULL{1},NETS_FULL{2},NETS_FULL{3},rand200_data.adjs)
 
 exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS2.png'],'resolution',300)
@@ -159,6 +160,12 @@ close all
 
 %% Figure S4
 
+% For eta parameters, times by -1, because the paper specifies eta is
+% always <0 but the code can accept positive values. To "avoid" confusion,
+% in the code eta is always explicitly defined as a negative value, we just
+% report it as a positive value in the paper because in the equation, eta
+% is always expressed as being converted to a negative value.
+
 for i = 1:13
     
    alphavals_static_add3{i} = rand200_topo_mdls{1,1}.P{i}(:,3);
@@ -167,25 +174,24 @@ for i = 1:13
    alphavals_static_add2{i} = rand200_topo_mdls{2,1}.P{i}(:,3);
    alphavals_growth_add2{i} = rand200_topo_mdls{2,2}.P{i}(:,3);
  
-   etavals_static_add3{i} = rand200_topo_mdls{1,1}.P{i}(:,1);
-   etavals_growth_add3{i} = rand200_topo_mdls{1,2}.P{i}(:,1); 
+   etavals_static_add3{i} = rand200_topo_mdls{1,1}.P{i}(:,1)*-1;
+   etavals_growth_add3{i} = rand200_topo_mdls{1,2}.P{i}(:,1)*-1; 
    
    gamvals_static_add3{i} = rand200_topo_mdls{1,1}.P{i}(:,2);
    gamvals_growth_add3{i} = rand200_topo_mdls{1,2}.P{i}(:,2);
  
-   etavals_static_add2{i} = rand200_topo_mdls{2,1}.P{i}(:,1);
-   etavals_growth_add2{i} = rand200_topo_mdls{2,2}.P{i}(:,1); 
+   etavals_static_add2{i} = rand200_topo_mdls{2,1}.P{i}(:,1)*-1;
+   etavals_growth_add2{i} = rand200_topo_mdls{2,2}.P{i}(:,1)*-1; 
    
    gamvals_static_mult2{i} = rand200_topo_mdls{3,1}.P{i}(:,2);
    gamvals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,2);
  
-   etavals_static_mult2{i} = rand200_topo_mdls{3,1}.P{i}(:,1);
-   etavals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,1);   
+   etavals_static_mult2{i} = rand200_topo_mdls{3,1}.P{i}(:,1)*-1;
+   etavals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,1)*-1;   
    
 end
-
-figure('Position',[233 364 1388 444])
-ax1 = axes('Position',[0.0745    0.5286    0.92    0.4511]);
+figure('Position',[233 364 1388 566])
+ax1 = axes('Position',[0.0891    0.2915    0.9015    0.5566]);
 PlotMdlResults([etavals_growth_add3; etavals_static_add3],TOPO_MDL_LABELS,'GrpNames',{'Growth','Static'},...
 'DataLabel','\eta','SigLvl',0,'MdlTypesInd',MdlTypesInd,'MdlTypesNames',MDLTYPES,'MdlOrder',topo_mdl_order{1});
 a = annotation('textbox',[0.0055    0.9468    0.0588    0.0885],'String','A','EdgeColor','none','FontSize',48);
@@ -195,8 +201,8 @@ exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4A.png'],'resolution',300)
 gamvals_static_add3{1} = [];
 gamvals_growth_add3{1} = [];
 
-figure('Position',[233 364 1388 444])
-ax1 = axes('Position',[0.0745    0.5286    0.92    0.4511]);
+figure('Position',[233 364 1388 566])
+ax1 = axes('Position',[0.0891    0.2915    0.9015    0.5566]);
 
 PlotMdlResults([gamvals_growth_add3; gamvals_static_add3],TOPO_MDL_LABELS,'GrpNames',{'Growth','Static'},...
 'DataLabel','\gamma','SigLvl',0,'MdlTypesInd',MdlTypesInd,'MdlTypesNames',MDLTYPES,'MdlOrder',topo_mdl_order{1});
@@ -207,8 +213,8 @@ exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4B.png'],'resolution',300)
 alphavals_static_add3{1} = [];
 alphavals_growth_add3{1} = [];
 
-figure('Position',[233 364 1388 444])
-ax1 = axes('Position',[0.0745    0.5286    0.92    0.4511]);
+figure('Position',[233 364 1388 566])
+ax1 = axes('Position',[0.0891    0.2915    0.9015    0.5566]);
 
 PlotMdlResults([alphavals_growth_add3; alphavals_static_add3],TOPO_MDL_LABELS,'GrpNames',{'Growth','Static'},...
 'DataLabel','\alpha','SigLvl',0,'MdlTypesInd',MdlTypesInd,'MdlTypesNames',MDLTYPES,'MdlOrder',topo_mdl_order{1});
