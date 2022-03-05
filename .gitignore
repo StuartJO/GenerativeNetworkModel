@@ -1,6 +1,6 @@
-/data/OUTPUTS
-/data/surface_data
-/data/OUTPUTS/Optimisation
-/data/OUTPUTS/Crossvalidated
+/data/OUTPUTS/
+/data/surface_data/
+/data/Optimisation/
+/data/Crossvalidated/
 /SLURM_OUTPUT/
 /Figures/
