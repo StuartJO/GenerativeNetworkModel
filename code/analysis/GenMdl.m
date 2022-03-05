@@ -160,7 +160,7 @@ end
        end     
         end
 
-        [~,I] = max(maxKS);     
+        [~,I] = max(DegCorr);     
         bestDegCorr_P = P(I,:);
         bestDegCorr_b = cell(1,100);
 

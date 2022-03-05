@@ -103,7 +103,7 @@ if TYPE == 2
        Input.ParamRange(3,:) = [0 8]; 
     end
 end
-Outputs = GenMdl(A,A_dist,D,[],Input);
+Output = GenMdl(A,A_dist,D,[],Input);
 
 Outputs.maxKS{i} = Output.maxKS;
 Outputs.DegCorr{i} = Output.DegCorr;
