@@ -50,35 +50,21 @@ if exist(filename) == 2
 
         Mdlouts.BestMdls{j}.max_DegCorr.repeats.maxKS{IND} = filedata.bestDegCorr_maxKS{j};
         Mdlouts.BestMdls{j}.max_DegCorr.repeats.DegCorr{IND} = filedata.bestDegCorr_DegCorr{j};
-        
+
+        Mdlouts.OptimMdl{j}.min_maxKS.net{IND} = filedata.b{j}{min_maxKS_ind};
+        Mdlouts.BestMdls{j}.max_DegCorr.net{IND} = filedata.b{j}{max_DegCorr_ind};
+                    
             if savenets == 1
-%             Nodes = filedata.Input{j}.NNodes;
-%             Asim = zeros(Nodes);
-%             Asim(filedata.b{j}{min_maxKS_ind}) = 1;
-%             Asim = Asim + Asim';
-%             Mdlouts.OptimMdls{j}.net{IND} = Asim;
-% 
-%             Asim = zeros(Nodes);
-%             Asim(filedata.b{j}{max_DegCorr_ind}) = 1;
-%             Asim = Asim + Asim';
-%             Mdlouts.OptimMdls{j}.net{IND} =  Asim;
-            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{min_maxKS_ind};
-            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{max_DegCorr_ind};
-            elseif savenets == 2
-%             Nodes = filedata.Input{j}.NNodes;
-%             Asim = zeros(Nodes);
-%             Asim(filedata.b{j}{min_maxKS_ind}) = 1;
-%             Asim = Asim + Asim';
-%             Mdlouts.OptimMdls{j}.net{IND} = Asim;
-% 
-%             Asim = zeros(Nodes);
-%             Asim(filedata.b{j}{max_DegCorr_ind}) = 1;
-%             Asim = Asim + Asim';
-%             Mdlouts.OptimMdls{j}.net{IND} =  Asim;
-            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{min_maxKS_ind};
-            Mdlouts.OptimMdls{j}.net{IND} = filedata.b{j}{max_DegCorr_ind};
             
-            Mdlouts.nets_edgeind{j}{IND} = filedata.b;
+            Mdlouts.OptimMdl{j}.min_maxKS.repeats.nets{IND} = filedata.optim_b{j};    
+            Mdlouts.BestMdls{j}.max_DegCorr.repeats.nets{IND} = filedata.bestDegCorr_b{j}; 
+
+            elseif savenets == 2
+
+            Mdlouts.OptimMdl{j}.min_maxKS.repeats.nets{IND} = filedata.optim_b{j};    
+            Mdlouts.BestMdls{j}.max_DegCorr.repeats.nets{IND} = filedata.bestDegCorr_b{j};                
+
+            Mdlouts.nets{j}{IND} = filedata.b;
 
             end
             % I assume that across subjects, the 'Input' variable is the

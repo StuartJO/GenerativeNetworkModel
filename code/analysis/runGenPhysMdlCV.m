@@ -1,8 +1,8 @@
-function runGenPhysMdlCV(PARC,GROWTH,MdlNum,ITER)
+function runGenPhysMdlCV(PARC,GROWTH,MdlNum,ITER,INPUTLOC,OUTPUTLOC)
 
-output_location = '/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Crossvalidated/';
+%OUTPUTLOC = '/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Crossvalidated/';
 
-input_compiled_data_location = '/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/';
+%INPUTLOC = '/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/';
 
 if PARC == 1
     mdldata = load('random200_data4physmdl.mat');
@@ -131,7 +131,7 @@ PD = [];
 
 end
 
-Mdlouts = load([input_compiled_data_location,parcname,'_PhysMdls_Growth_',num2str(GROWTH),'_output.mat']);
+Mdlouts = load([INPUTLOC,parcname,'_PhysMdls_Growth_',num2str(GROWTH),'_output.mat']);
 
 Input = Mdlouts.Inputs{MdlNum};
 Input.NNodes = length(A_dist);  
@@ -140,4 +140,4 @@ Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);
 
 Fcv.P = P;
 
-save([output_location,'CrossValidate_',parcname,'_PhysMdls_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')
+save([OUTPUTLOC,'CrossValidate_',parcname,'_PhysMdls_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')

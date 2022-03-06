@@ -26,6 +26,7 @@ if nargin < 4
     SAVELOC = '.';
 end
 
+
 Input.useParfor = 1;
 
 Input.ndraw = 2000;
@@ -79,6 +80,7 @@ Input.ParamRange(3,:) = [0 8];
 Input.ParamRange(4,:) = [0 0];   
     
 end
+if ~isfile([SAVELOC,'/random200_TopoMdls_Sub_',num2str(SUB),'_',fileoutname,'_Growth_',num2str(GROWTH),'.mat'])
 
 load('random200_data4topomdl.mat','adjs','A_dist','dists')
 
@@ -128,3 +130,5 @@ Outputs.Input{i} = Output.Input;
 end
 
 save([SAVELOC,'/random200_TopoMdls_Sub_',num2str(SUB),'_',fileoutname,'_Growth_',num2str(GROWTH),'.mat'],'-struct','Outputs','-v7.3')
+
+end

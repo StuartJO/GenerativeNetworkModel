@@ -1,4 +1,6 @@
-function runGenTopoMdlCV(TYPE,GROWTH,MdlNum,ITER)
+function runGenTopoMdlCV(TYPE,GROWTH,MdlNum,ITER,INPUTLOC,OUTPUTLOC)
+
+%OUTPUTLOC = '/fs02/hf49/Stuart/GrowthModel_newParc/Paper_topo_mdls/Crossvalidated/';
 
 % Input.Growth = GROWTH;
 % Input.DistFunc = 'exponential';
@@ -20,9 +22,9 @@ fileoutname = 'add3';
     
 end
 
-Mdlouts = load(['random200_TopoMdls_',fileoutname,'_Growth_',num2str(GROWTH),'_output.mat']);
+if ~isfile([OUTPUTLOC,'/CrossValidate_random200_TopoMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'])
 
-Input = Mdlouts.Input{MdlNum};
+Mdlouts = load([INPUTLOC,'/random200_TopoMdls_',fileoutname,'_Growth_',num2str(GROWTH),'_output.mat'],'Inputs','OptimMdl');
 
 addpath /projects/kg98/stuarto/BCT
 
@@ -40,11 +42,13 @@ end
 
 PD = [];
 
-P = Mdlouts.MinMdlFitParams{MdlNum};
+Input = Mdlouts.Inputs{MdlNum};
+Input.NNodes = length(A_dist);  
+P = Mdlouts.OptimMdl{MdlNum}.min_maxKS.P;
 Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);
 
 Fcv.P = P;
 
-output_location = '/fs02/hf49/Stuart/GrowthModel_newParc/Paper_topo_mdls/Crossvalidated/';
+save([OUTPUTLOC,'/CrossValidate_random200_TopoMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')
 
-save([output_location,'CrossValidate_random200_TopoMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')
+end
