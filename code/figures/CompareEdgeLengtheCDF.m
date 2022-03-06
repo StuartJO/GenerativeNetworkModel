@@ -1,10 +1,5 @@
 function CompareEdgeLengtheCDF(A_dist,MultNets,Add2Nets,Add3Nets,adjs)
 
-% for i = 1:100; Net = Fcv_mult2_static.bestnet{3}{i}; D = Net.*dists{19}; Du = triu(D,1); DATA{i} = Du(Du~=0); end
-% for i = 1:100; Net = Fcv_add2_static.bestnet{3}{i}; A = zeros(100); A(Net) = 1; A = A + A'; Net = A; D = Net.*dists{19}; Du = triu(D,1); DATA2{i} = Du(Du~=0); end
-% for i = 1:100; Net = Fcv_add3_static.bestnet{3}{i}; A = zeros(100); A(Net) = 1; A = A + A'; Net = A; D = Net.*dists{19}; Du = triu(D,1); DATA4{i} = Du(Du~=0); end
-% for i = 1:100; Net = double(adjs{i}>0); D = Net.*dists{19}; Du = triu(D,1); DATA3{i} = Du(Du~=0); end
-
 for i = 1:length(MultNets)
     Du = triu(MultNets{i}.*A_dist,1);
     MultData{i} = Du(Du~=0);
@@ -34,6 +29,6 @@ plot(xi,mean(f2),'LineWidth',2)
 
 plot(xi,mean(f3),'Color',[0 0 0],'LineWidth',2)
 ylabel('Proportion of connections')
-xlabel('Connection length')
+xlabel('Connection length (mm)')
 legend({'Multiplicative','Additive (no \gamma)','Additive','Empirical'})
 set(gca,'FontSize',24)
