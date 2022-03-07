@@ -9,7 +9,7 @@ rand200_topo_mdls{1,2} = load('random200_FCV_TopoMdls_add3_Growth_1_output.mat')
 rand200_topo_mdls{2,1} = load('random200_FCV_TopoMdls_add2_Growth_0_output.mat');
 rand200_topo_mdls{2,2} = load('random200_FCV_TopoMdls_add2_Growth_1_output.mat');
 rand200_topo_mdls{3,1} = load('random200_FCV_TopoMdls_mult2_Growth_0_output.mat');
-rand200_topo_mdls{3,2} = load('random200_FCV_TopoMdls_mult2_Growth_1_output.mat');
+%rand200_topo_mdls{3,2} = load('random200_FCV_TopoMdls_mult2_Growth_1_output.mat');
 
 rand200_phys_mdls{2} = load('random200_FCV_PhysMdls_Growth_1_output.mat');
 rand200_phys_mdls{1} = load('random200_FCV_PhysMdls_Growth_0_output.mat');
@@ -19,9 +19,9 @@ MDLTYPES = {'Spatial','Homophilly','Clustering','Degree'};
 
 % First set of comparisons, each row gives the row and column of rand200_topo_mdls
 % to pull data from
-c1 = [1,2;2,1;1,1;1,1]; 
+c1 = [1,2;2,1;1,1;1,1;1,2]; 
 
-c2 = [1,1;3,1;2,1;3,1]; 
+c2 = [1,1;3,1;2,1;2,1;2,2]; 
 
 NCompareFigs = size(c1);
 
@@ -29,26 +29,33 @@ NCompareFigs = size(c1);
 % are 26 models. Comparing all combinations give 325 comparisons
 NStatisticalComparisons = (26*25)/2;
 
-FigureAnnot = {'','A','B','C'};
+FigureAnnot = {'','A','B','C',''};
 
-FigureNames = {'3','S1','S1','S1'};
+FigureNames = {'3','S1','S1','S1','_S2'};
 
 GROUPNAMES = {{'Growth','Static'},{'Additive (no \gamma)','Multiplicative'},...
-    {'Additive','Additive (no \gamma)'},{'Additive','Multiplicative'}};
+    {'Additive','Additive (no \gamma)'},{'Additive','Multiplicative'},{'Additive','Additive (no \gamma)'}};
 
 MdlTypesInd = [1 2 2 3 3 3 3 3 4 4 4 4 4];
 
 for i = 1:NCompareFigs
 
+    if ismember(i,[1 5])
+figure('Position',[10 364 1875 566])        
+    else
 figure('Position',[233 364 1388 566])
+    end
 ax1 = axes('Position',[0.0891    0.2915    0.9015    0.5566]);
 [ordered_mdl_data{i},V,topo_mdl_order{i},issig,pval] = PlotMdlResults([rand200_topo_mdls{c1(i,1),c1(i,2)}.Fcv; rand200_topo_mdls{c2(i,1),c2(i,2)}.Fcv],TOPO_MDL_LABELS,'GrpNames',GROUPNAMES{i},...
 'DataLabel','\it{F_{CV}}','SigLvl',NStatisticalComparisons,'MdlTypesInd',MdlTypesInd,'MdlTypesNames',MDLTYPES);
 
 a = annotation('textbox',[0.0055    0.9468    0.0588    0.0885],'String',FigureAnnot{i},'EdgeColor','none','FontSize',48);
 
+if ismember(i,[1 5])
 print([FIGURE_LOCATION,'/Figure',FigureNames{i},FigureAnnot{i},'.png'],'-dpng','-r300')
-
+else
+   exportgraphics(gcf,[FIGURE_LOCATION,'/Figure',FigureNames{i},FigureAnnot{i},'.png'],'resolution',300) 
+end
 close all
 
 end
@@ -75,78 +82,107 @@ end
 
 ax1.XLabel.Position = [10.5000 -0.1865 1];
 
-print([FIGURE_LOCATION,'/Figure4.png'],'-dpng','-r300')
+%print([FIGURE_LOCATION,'/Figure4.png'],'-dpng','-r300')
+exportgraphics(gcf,[FIGURE_LOCATION,'/Figure4.png'],'resolution',300)
 
 close all
 
 %% Figure 5
 % This will take a very very long time to run.
 
-% MdlColors = [152,78,163;...
-% 55,126,184;...
-% 228,26,28;...
-% 77,175,74;...
-% 255,127,0;...
-% 66,224,245;...
-% 166,86,40;...
-% 77,190,238]./255;
-% 
-% load('random200_data4physmdl.mat')
-% for i = 1:length(adjs)
-% 
-%     A = double(adjs{i}>0);
-%     EmpData{1}(i,:) = sum(A); 
-%     EmpData{3}(i,:) = betweenness_bin(A);
-%     EmpData{2}(i,:) = clustering_coef_bu(A)';
-%     EmpData{4}(i,:) = (sum(A_dist.*A))./EmpData{1}(i,:); 
-% 
-% end
-% 
-% rand200_phys_growth_topo = load('random200_FCV_PhysMdls_Growth_1_output_Topography.mat');
-% 
-% MDL = [4 5 10 1];
-% 
-% Model = rand200_phys_growth_topo.Topography{4};
-% 
-% CorrDATA = rand200_phys_mdls{2}.TopographyCorrs(MDL);
-% 
-% SurfaceData.vertices = lh_inflated_verts;
-% SurfaceData.faces = lh_faces;
-% SurfaceData.parc = lh_rand200;
-% 
-% load('Missing_rois.mat')
-% SurfaceData.MissingROI = rand200_missing;
-% 
-% plotSpatialEmbeddings(EmpData,Model,CorrDATA,SurfaceData,LABELS(MDL),MdlColors([4 4 2 1],:),[FIGURE_LOCATION,'/Figure5']);
-%
-% close all
+MdlColors = [152,78,163;...
+55,126,184;...
+228,26,28;...
+77,175,74;...
+255,127,0;...
+66,224,245;...
+166,86,40;...
+77,190,238]./255;
 
-%% Figure S2
+load('random200_data4physmdl.mat')
+for i = 1:length(adjs)
 
-rand200_data = load('random200_data4topomdl.mat');
-add3_optim_mdls = load('random200_TopoMdls_add3_Growth_0_output.mat', 'OptimMdls');
-add2_optim_mdls = load('random200_TopoMdls_add2_Growth_0_output.mat', 'OptimMdls');
-mult2_optim_mdls = load('random200_TopoMdls_mult2_Growth_0_output.mat', 'OptimMdls');
+    A = double(adjs{i}>0);
+    EmpData{1}(i,:) = sum(A); 
+    EmpData{3}(i,:) = betweenness_bin(A);
+    EmpData{2}(i,:) = clustering_coef_bu(A)';
+    EmpData{4}(i,:) = (sum(A_dist.*A))./EmpData{1}(i,:); 
 
-NETS{1} = mult2_optim_mdls.OptimMdls{3}.net;
-NETS{2} = add2_optim_mdls.OptimMdls{3}.net;
-NETS{3} = add3_optim_mdls.OptimMdls{3}.net;
-
-for j = 1:3
-for i = 1:length(NETS{j})
-    a = zeros(100);
-    a(NETS{j}{i}) = 1;
-    a = a + a';
-    NETS_FULL{j}{i} = a;
-end
 end
 
-figure('Position',[680   320   783   658])
-CompareEdgeLengtheCDF(rand200_data.A_dist,NETS_FULL{1},NETS_FULL{2},NETS_FULL{3},rand200_data.adjs)
+rand200_phys_growth_topo = load('random200_FCV_PhysMdls_Growth_1_output_Topography.mat');
 
-exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS2.png'],'resolution',300)
+MDL = [4 5 10 1];
+
+Model = rand200_phys_growth_topo.Topography{4};
+
+CorrDATA = rand200_phys_mdls{2}.TopographyCorrs(MDL);
+CorrDATA{2} = rand200_phys_mdls{1}.TopographyCorrs{5};
+
+GrowthMeanEdgeLenCorr = load('random200_FCV_PhysMdls_Growth_1_output_NewMeanEdgeLenCorr.mat', 'MeanEdgeLenCorr');
+StaticMeanEdgeLenCorr = load('random200_FCV_PhysMdls_Growth_0_output_NewMeanEdgeLenCorr.mat', 'MeanEdgeLenCorr');
+
+for i = 1:4
+    if i == 2
+     CorrDATA{i}(:,4) = StaticMeanEdgeLenCorr.MeanEdgeLenCorr{MDL(i)};   
+    else
+    CorrDATA{i}(:,4) = GrowthMeanEdgeLenCorr.MeanEdgeLenCorr{MDL(i)};
+    end
+end
+
+SurfaceData.vertices = lh_inflated_verts;
+SurfaceData.faces = lh_faces;
+SurfaceData.parc = lh_rand200;
+
+load('Missing_rois.mat')
+SurfaceData.MissingROI = rand200_missing;
+
+plotSpatialEmbeddings(EmpData,Model,CorrDATA,SurfaceData,LABELS(MDL),MdlColors([4 4 2 1],:),[FIGURE_LOCATION,'/Figure5']);
 
 close all
+
+%% Figure S2
+% 
+% rand200_data = load('random200_data4topomdl.mat');
+% add3_optim_mdls = load('random200_TopoMdls_add3_Growth_0_output.mat', 'OptimMdl');
+% add2_optim_mdls = load('random200_TopoMdls_add2_Growth_0_output.mat', 'OptimMdl');
+% mult2_optim_mdls = load('random200_TopoMdls_mult2_Growth_0_output.mat', 'OptimMdl');
+% 
+% % NETS{1} = mult2_optim_mdls.OptimMdl{3}.min_maxKS.net;
+% % NETS{2} = add2_optim_mdls.OptimMdl{3}.min_maxKS.net;
+% % NETS{3} = add3_optim_mdls.OptimMdl{3}.min_maxKS.net;
+% 
+% NETS{1} = mult2_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
+% NETS{2} = add2_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
+% NETS{3} = add3_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
+% 
+% % for j = 1:3
+% % for i = 1:length(NETS{j})
+% %     a = zeros(100);
+% %     a(NETS{j}{i}) = 1;
+% %     a = a + a';
+% %     NETS_FULL{j}{i} = a;
+% % end
+% % end
+% for j = 1:3
+%     IND = 1;
+% for i = 1:length(NETS{j})
+%     for k = 1:100
+%     a = zeros(100);
+%     a(NETS{j}{k}{i}) = 1;
+%     a = a + a';
+%     NETS_FULL{j}{IND} = a;
+%     IND = IND + 1;
+%     end
+% end
+% end
+% 
+% figure('Position',[680   320   783   658])
+% CompareEdgeLengtheCDF(rand200_data.A_dist,NETS_FULL{1},NETS_FULL{2},NETS_FULL{3},rand200_data.adjs)
+% 
+% exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS2.png'],'resolution',300)
+% 
+% close all
 
 %% Figure S3
 
@@ -184,10 +220,10 @@ for i = 1:13
    etavals_growth_add2{i} = rand200_topo_mdls{2,2}.P{i}(:,1)*-1; 
    
    gamvals_static_mult2{i} = rand200_topo_mdls{3,1}.P{i}(:,2);
-   gamvals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,2);
+%   gamvals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,2);
  
    etavals_static_mult2{i} = rand200_topo_mdls{3,1}.P{i}(:,1)*-1;
-   etavals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,1)*-1;   
+%   etavals_growth_mult2{i} = rand200_topo_mdls{3,2}.P{i}(:,1)*-1;   
    
 end
 figure('Position',[233 364 1388 566])
@@ -196,7 +232,8 @@ PlotMdlResults([etavals_growth_add3; etavals_static_add3],TOPO_MDL_LABELS,'GrpNa
 'DataLabel','\eta','SigLvl',0,'MdlTypesInd',MdlTypesInd,'MdlTypesNames',MDLTYPES,'MdlOrder',topo_mdl_order{1});
 a = annotation('textbox',[0.0055    0.9468    0.0588    0.0885],'String','A','EdgeColor','none','FontSize',48);
 
-exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4A.png'],'resolution',300)
+%exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4A.png'],'resolution',300)
+print([FIGURE_LOCATION,'/FigureS4A.png'],'-dpng','-r300')
 
 gamvals_static_add3{1} = [];
 gamvals_growth_add3{1} = [];
@@ -208,7 +245,9 @@ PlotMdlResults([gamvals_growth_add3; gamvals_static_add3],TOPO_MDL_LABELS,'GrpNa
 'DataLabel','\gamma','SigLvl',0,'MdlTypesInd',MdlTypesInd,'MdlTypesNames',MDLTYPES,'MdlOrder',topo_mdl_order{1});
 a = annotation('textbox',[0.0055    0.9468    0.0588    0.0885],'String','B','EdgeColor','none','FontSize',48);
 
-exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4B.png'],'resolution',300)
+%exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4B.png'],'resolution',300)
+
+print([FIGURE_LOCATION,'/FigureS4B.png'],'-dpng','-r300')
 
 alphavals_static_add3{1} = [];
 alphavals_growth_add3{1} = [];
@@ -221,7 +260,9 @@ PlotMdlResults([alphavals_growth_add3; alphavals_static_add3],TOPO_MDL_LABELS,'G
 
 a = annotation('textbox',[0.0055    0.9468    0.0588    0.0885],'String','C','EdgeColor','none','FontSize',48);
 
-exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4C.png'],'resolution',300)
+%exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS4C.png'],'resolution',300)
+
+print([FIGURE_LOCATION,'/FigureS4C.png'],'-dpng','-r300')
 
 close all
 
@@ -295,7 +336,7 @@ for i = [3 5 6 8]
 GROWTH_DEGCORR{i} = [];
 end
 
-PlotMdlResults([GROWTH_DEGCORR; STATIC_DEGCORR],LABELS,'GrpNames',{'Growth','Static'},...
+[CorrDataOrdered] = PlotMdlResults([GROWTH_DEGCORR; STATIC_DEGCORR],LABELS,'GrpNames',{'Growth','Static'},...
 'DataLabel',{'Spearman correlation','with empirical degree'},'SigLvl',0,'MdlTypesInd',[1 3 3 4 4 5 5 6 6 2],'MdlTypesNames',PHYS_MDLTYPES,'MdlOrder',order_phys_mdls);
 
 ax1.XLabel.Position = [10.5000   -1.7843    1.0000];
@@ -303,3 +344,42 @@ ax1.XLabel.Position = [10.5000   -1.7843    1.0000];
 exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS7.png'],'resolution',300)
 
 close all
+
+%% Figures not in paper
+% These were just useful things for reference:
+
+[h,p] = ComputeSigDiff([rand200_topo_mdls{1,1}.Fcv rand200_topo_mdls{1,2}.Fcv],.05,325,1);
+
+imagesc(h)
+xticks(1:26)
+yticks(1:26)
+
+for i = 1:13
+   KS_PLOT_TOPO_LABELS{i} = ['Static ',TOPO_MDL_LABELS{i}];
+end
+for i = 14:26
+   KS_PLOT_TOPO_LABELS{i} = ['Growth ',TOPO_MDL_LABELS{i-13}];
+end
+xticklabels(KS_PLOT_TOPO_LABELS)
+yticklabels(KS_PLOT_TOPO_LABELS)
+xtickangle(45)
+
+
+
+[h,p] = ComputeSigDiff([rand200_topo_mdls{2,1}.Fcv rand200_topo_mdls{2,2}.Fcv],.05,325,1);
+
+
+
+imagesc(h)
+xticks(1:26)
+yticks(1:26)
+
+for i = 1:13
+   KS_PLOT_TOPO_LABELS{i} = ['Static ',TOPO_MDL_LABELS{i}];
+end
+for i = 14:26
+   KS_PLOT_TOPO_LABELS{i} = ['Growth ',TOPO_MDL_LABELS{i-13}];
+end
+xticklabels(KS_PLOT_TOPO_LABELS)
+yticklabels(KS_PLOT_TOPO_LABELS)
+xtickangle(45)

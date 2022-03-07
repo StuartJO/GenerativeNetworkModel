@@ -36,6 +36,6 @@ for i = 1:M
     end
 end
 
-     p = p.*Ncorr;
+     %p = p.*Ncorr;
 
 end
