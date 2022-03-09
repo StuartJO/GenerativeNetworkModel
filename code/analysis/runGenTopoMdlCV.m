@@ -51,4 +51,6 @@ Fcv.P = P;
 
 save([OUTPUTLOC,'/CrossValidate_random200_TopoMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat'],'-struct','Fcv','-v7.3')
 
+else
+   disp([OUTPUTLOC,'/CrossValidate_random200_TopoMdls_',fileoutname,'_mdl_',num2str(MdlNum),'_Growth_',num2str(GROWTH),'_iter_',num2str(ITER),'.mat exists!'] )
 end
