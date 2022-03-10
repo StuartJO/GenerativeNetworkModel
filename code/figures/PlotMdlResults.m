@@ -1,4 +1,4 @@
-function [ordered_mdl_data,V,mdl_order,issig,pval] = PlotMdlResults(MdlData,MdlNames,varargin)
+function [ordered_mdl_data,V,mdl_order,issig,pval,lgd1,lgd2] = PlotMdlResults(MdlData,MdlNames,varargin)
 
 %[ordered_mdl_data,V,mdl_order,h,p] = PlotPairedMdlResults(DataMdlGrp1,DataMdlGrp2,MdlNames,GrpNames,DataLabel,MdlOrder,MdlTypesInd,MdlTypesCmap,MdlTypesNames,SigLvl)
 
@@ -246,13 +246,15 @@ if ~isempty(MdlTypesNames)
 % respective model type colour.
 U = unique(MdlTypesInd);
 for i = 1:length(U)
-    lgd1_s(i) = scatter(2*length(mdl_order)+1,0,20,MdlTypesCmap(U(i),:),'filled');
+    lgd1_s(i) = scatter(2*length(mdl_order)+1,0,80,MdlTypesCmap(U(i),:),'filled');
     
 end
 
 % Make the legend for just the model types
-lgd1 = legend(lgd1_s,MdlTypesNames,'Location','northoutside','Fontsize',14,'Orientation','horizontal','AutoUpdate','off');
+lgd1 = legend(lgd1_s,MdlTypesNames,'Location','northoutside','Fontsize',20,'Orientation','horizontal','AutoUpdate','off');
 
+else
+    lgd1 = [];
 end
 
 if Ngrps == 2
@@ -264,10 +266,12 @@ lgd2_p(2) = plot([2*length(mdl_order)+1 2*length(mdl_order)+2],[1 1],'Color',[0 
 
 %lgdPosition = lgd1.Position;
 
-% Manually adjust the position of the legend
-lgd1.Position(2) = 0.9171;
-
 if ~isempty(MdlTypesNames)
+
+% Manually adjust the position of the legend
+lgd1.Position(2) = 0.9271;
+  
+end
 
 % Plot significant stars over the models which have significant differents 
 if SigLvl ~= 0
@@ -284,26 +288,25 @@ if SigLvl ~= 0
     end
     
     sigstar(val_pairs(logical(issig)),pval(logical(issig)))
-end
-
 else
-   issig = [];
+    issig = [];
    pval = [];
 end
-
+   
 % Make a new invisible axis over the first. Needed because a plot cannot
 % have two seperate legends
 ah1=axes('position',pos,'visible','off');
 
 % Make the legend for the model types
-lgd2 = legend(ah1,lgd2_p,GrpNames,'Location','northoutside','Fontsize',14,'Orientation','horizontal','AutoUpdate','off');
+lgd2 = legend(ah1,lgd2_p,GrpNames,'Location','northoutside','Fontsize',20,'Orientation','horizontal','AutoUpdate','off');
 
 %lgdPosition = lgd2.Position;
 
 % Manually adjust its position
-lgd2.Position(2) = 0.8622;
+lgd2.Position(2) = 0.8569;
 
 else
    issig = [];
-   pval = [];    
+   pval = [];  
+   lgd2 = [];
 end
