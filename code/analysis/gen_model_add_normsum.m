@@ -1,4 +1,4 @@
-function [B,b] = gen_model_additive_normsum(A,PDMs,m,modeltype,modelvar,eta,gam,alpha,epsilon)
+function [B,b] = gen_model_add_normsum(A,PDMs,m,modeltype,modelvar,eta,gam,alpha,epsilon)
 % GENERATIVE_MODEL          Run generative model code
 %
 %   B = GENERATIVE_MODEL(A,D,m,modeltype,modelvar,params)
@@ -114,6 +114,8 @@ if isempty(PD)
     alpha(3) = 0;
     eta(2) = 1;   
 end
+
+alpha(isnan(alpha)) = 0;
 
 % if ~exist('PD','var') && size(D,3) == 1 && ~iscell(D)
 %     

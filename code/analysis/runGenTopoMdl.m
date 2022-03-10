@@ -32,7 +32,6 @@ Input.useParfor = 1;
 Input.ndraw = 2000;
 Input.pow = 2;
 Input.nlvl = 5;
-Input.useParFor = 1;
 
 Input.Growth = GROWTH;
 Input.PD1Func = 'exponential';

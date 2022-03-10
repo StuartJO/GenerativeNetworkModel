@@ -115,6 +115,8 @@ if isempty(PD)
     eta(2) = 1;   
 end
 
+alpha(isnan(alpha)) = 0;
+
 switch modeltype
 
     case 'clu-avg'

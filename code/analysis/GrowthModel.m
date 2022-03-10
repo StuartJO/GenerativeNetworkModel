@@ -96,7 +96,7 @@ if ~isfield(Input,'PD2Func')
         error('PD2 exists but PD2Func is not defined')
     end
     % If not defined we just set it to 'powerlaw', won't do anything
-PD2Func = '';  
+PD2Func = 'powerlaw';
 else
 PD2Func = Input.PD2Func;
 end

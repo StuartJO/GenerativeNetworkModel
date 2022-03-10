@@ -39,7 +39,7 @@ IND = 1;
 EXCLUDED = [];
 INCLUDED = [];
 for i = 1:nTotal
-	if bounds(i,1) == bounds(i,2)
+	if bounds(i,1) == bounds(i,2) || max(isnan(bounds(i,:))) == 1
 	    EXCLUDED = [EXCLUDED i];	
 	else
 	    x(:,IND) = interp1(bounds(i,:),lims,xorig(:,i));
