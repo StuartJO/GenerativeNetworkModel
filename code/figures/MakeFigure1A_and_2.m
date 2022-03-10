@@ -2,7 +2,7 @@ function MakeFigure1A_and_2
 
 % This makes Figure 1A and 2 for the paper
 
-load('Fetal_faces_vertices_native_ss.mat')
+load('Fetal_surfaces_native.mat')
 load('fsaverage_surface_data.mat')
 
 % Note the plotting of the figures took a bet of messing around to make it
@@ -116,7 +116,7 @@ load('fsaverage_surface_data.mat', 'lh_faces','lh_verts','lh_rand200')
 % The surfaces we used above where in each fetal brains own native space.
 % To plot the parcellation we need the surfaces aligned to fsaverage
 
-load('Fetal_faces_vertices.mat')
+load('Fetal_surfaces_adult_reg.mat')
 for i = 1:18
 ax{i} = my_subplot(3,6,i,'OuterPosition');
 lhsurface.vertices = fetal_vertices_adult{i};
@@ -153,7 +153,7 @@ end
 exportgraphics(gcf,'FetalBrainParc.png','Resolution','300')
 %% Make panels B and C
 
-load('Fetal_faces_vertices_native_ss.mat')
+load('Fetal_surfaces_native.mat')
 load('fsaverage_surface_data.mat')
 
 for i = 1:19
