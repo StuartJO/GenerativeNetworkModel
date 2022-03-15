@@ -65,7 +65,7 @@ TOTALJOBS=ceil(length(surf_redu.vertices) / POINTSPERJOB)
 
 dlmwrite([DATADIR,'/ReducedJobs.txt'],TOTALJOBS); 
 
-save([OUTPUT_DIR,'/Reduced.mat'],'surface','vertex_ind','surf_redu_points')
+save([DATADIR,'/Reduced.mat'],'surface','vertex_ind','surf_redu_points')
 ```
 Then you will need to run the following scripts in this order
 
