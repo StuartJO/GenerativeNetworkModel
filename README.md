@@ -4,6 +4,9 @@ This code is for Modeling spatial, developmental, physiological, and topological
 
 Any questions please email stuart.oldham@mcri.edu.au
 
+Data to regenerate all figures and data reported in the paper can be found here:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6341625.svg)](https://doi.org/10.5281/zenodo.6341625)
+
 Note that for the posted data, the raw optimisation and cross validation outputs are not available because it is too much data to host anywhere online. The optimisation data runs to about 120GB and the cross validation to 400GB, which is a lot! If you you really, *really*, ***really*** want to access it, chat to me and we will see what we can figure out.
 
 To generative all figures from the paper run (in MATLAB)
