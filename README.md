@@ -68,9 +68,9 @@ Compile_PhysMdls_FCV
 
 et voilà! You have rerun all the analysis! Yayyyy
 
-You may want to use this code for your own data. Use the runGenTopoMdl.m as a template, as I used this as a wrapped for all my topological model. Essentially all you need is a) a number of connectomes for a number of subjects arranged in a cell (adjs), a final distance matrix to evaluate the model with (A_dist, code currently assumes only a single A_dist applies to all networks but you could have individualised ones)), and finally a distance matrix to run the model with (if not using a growth model, this will be the same as A_dist).
+You may want to use this code for your own data. Use the runGenTopoMdl.m as a template, as I used this as a wrapper for all my topological models. Essentially all you need is a) a number of connectomes for a number of subjects arranged in a cell (adjs), a final distance matrix to evaluate the model with (A_dist, code currently assumes only a single A_dist applies to all networks but you could have individualised ones)), and finally a distance matrix to run the model with (if not using a growth model, this will be the same as A_dist).
 
-The following scripts will require editing to work with your own data:
+The following scripts will require editing to work with your own data if you want to go that far:
 
 runGenTopoMdl.m
 runGenPhysMdl.m
