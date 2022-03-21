@@ -1,6 +1,38 @@
-function [maxKS,KS,maxKS_p,KS_p,A_vals,B_vals] = Betzel_energy(A,D,B,customOrMatlab)
-% OUTPUTS:
-% E: energy
+function [maxKS,KS,maxKS_p,KS_p,A_vals,B_vals] = calc_maxKS(A,D,B,customOrMatlab)
+
+% This function calculates the maxKS value for network B when comparing it
+% to network A
+%
+% Inputs:
+%                       A = an N*N adjacency matrix
+%
+%                       D = an N*N distance matrix (should correspond to
+%                       distances between nodes in A/B)
+%           
+%                       B = an N*N adjacency matrix to compare to A. B can
+%                       also be an list of edge indices
+%
+%                       customOrMatlab = 'matlab' (default) or 'custom'.
+%                       Uses either MATLABs inbult function to calculate KS
+%                       values or one provided in this script (both will
+%                       give the same result, however the MATLAB one will
+%                       provide p-values)
+% Outputs:
+%                       maxKS = the maximum KS value (i.e., indication fo
+%                       model fit)
+%
+%                       KS = KS values for each measure in a 1*4 array,
+%                       where KS(1) is the KS value for the degree
+%                       distribution, KS(2) is the clustering distribution,
+%                       KS(3) is the betweenness distribution, KS(4) is the
+%                       edge length distribution 
+%
+%                       maxKS_p = p-values for each KS value (only if 
+%                       customOrMatlab = 'matlab')
+%                       
+%                       A_vals = the values for input network A
+%
+%                       B_vals = the values for input network B
 
 if size(D,1) ~= size(B,1) || size(D,2) ~= size(B,2)
    Asim_mat = zeros(size(D));

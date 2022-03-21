@@ -19,7 +19,10 @@ PARC=$1
 GROWTH=$2
 MDLNUM=$3
 
+CODEDIR="/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel"
+DATADIR="/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data"
+
 echo $1 $2 $3
 module load matlab/r2017a
 
-matlab -nodisplay -nosplash -r "addpath(genpath(('/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel'))); addpath('/projects/kg98/stuarto/BCT'); runGenPhysMdlCV($PARC,$GROWTH,$MDLNUM,$ITER,'/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/OUTPUTS','/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data/Crossvalidated'); exit"
+matlab -nodisplay -nosplash -r "addpath(genpath(('${CODEDIR}'))); addpath('/projects/kg98/stuarto/BCT'); runGenPhysMdlCV($PARC,$GROWTH,$MDLNUM,$ITER,'${DATADIR}/OUTPUTS','${DATADIR}/Crossvalidated'); exit"

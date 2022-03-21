@@ -2,6 +2,8 @@
 
 This code is for Modeling spatial, developmental, physiological, and topological constraints on human brain connectivity
 
+This requires the Brain Connectivity Toolbox (https://sites.google.com/site/bctnet/) to run some functions (place it into this directory).
+
 Any questions please email stuart.oldham@mcri.edu.au
 
 Data to regenerate all figures and data reported in the paper can be found here:
@@ -66,6 +68,20 @@ Compile_PhysMdls_FCV
 
 et voilà! You have rerun all the analysis! Yayyyy
 
-You may want to use this code for your own data. Use the runGenPhysMdl.m as a template, as I used this as a wrapped for all my topological model. Essentially all you need is a) a number of connectomes for a number of subjects arranged in a cell (adjs), a final distance matrix to evaluate the model with (A_dist, code currently assumes only a single A_dist applies to all networks but you could have individualised ones)), and finally a distance matrix to run the model with (if not using a growth model, this will be the same as A_dist). It should be very straightforward to adjust the code for your own purpose! 
+You may want to use this code for your own data. Use the runGenTopoMdl.m as a template, as I used this as a wrapped for all my topological model. Essentially all you need is a) a number of connectomes for a number of subjects arranged in a cell (adjs), a final distance matrix to evaluate the model with (A_dist, code currently assumes only a single A_dist applies to all networks but you could have individualised ones)), and finally a distance matrix to run the model with (if not using a growth model, this will be the same as A_dist).
 
+The following scripts will require editing to work with your own data:
 
+runGenTopoMdl.m
+runGenPhysMdl.m
+
+runGenTopoMdlCV.m
+runGenPhysMdlCV.m
+
+Compile_TopoMdls.m
+Compile_PhysMdls.m
+
+Compile_TopoMdls_FCV.m
+Compile_PhysMdls_FCV.m
+
+The editing will require 1) updating input files and 2) updating output filenames

@@ -8,6 +8,120 @@ function [maxKS,KS,P,b,DegCorr] = VoronoinLandScape(A,A_dist,PD1,PD2,m,Input)
 % preferentially sampling parameter values from cells with the smallest 
 % maxKS, and then performing Voronoi tessellation again. This repeats a
 % number of times.
+%
+% Inputs:
+%
+% A = The adjacency matrix to model
+%
+% A_dist = The distances between nodes (e.g., Euclidean distances, fibre
+% distance) for A. This distance is used to compute how similar the model
+% is to the input adjacency matrix.
+%
+% PD1 = Either a matrix indicating pairwise similarity/distances between nodes, or a cell where each
+% element contains such a distance matrix, to be used for the modelling itself.
+% The "growth" model is specied by the latter of these options.
+%
+% PD2 = A second matrix indicating pairwise similarity/distances between nodes in
+% A (unlike with PD1 a cell cannot be used as an input here). This could be 
+% correlated gene expression, similarity in histology etc.
+%
+% m = the number of edges for the model to form. When doing a growth model
+% this should be a vector where each elemenet specifies the number of edges
+% which should be present in the network at the end of that timestep (it is
+% NOT the number of edges to form at each step, but rather the cumulative
+% edges). Can also be specified as the density value
+%
+% Input = a structure containing the many possible options needed to
+% configure the model. The following fields are required:
+%   AddMult = 'Add' or 'Mult', if the multiplicative or additive form is to
+%   be used
+%
+%   ModelNum = A value between 1 and 13, each corresponds to the following
+%   topology form:
+%       1.  'sptl'          spatial model
+%       2.  'neighbors'     number of common neighbors
+%       3.  'matching'      matching index
+%       4.  'clu-avg'       average clustering coeff.
+%       5.  'clu-min'       minimum clustering coeff.
+%       6.  'clu-max'       maximum clustering coeff.
+%       7.  'clu-diff'      difference in clustering coeff.
+%       8.  'clu-prod'      product of clustering coeff.
+%       9.  'deg-avg'       average degree
+%       10. 'deg-min'       minimum degree
+%       11. 'deg-max'       maximum degree
+%       12. 'deg-diff'      difference in degree
+%       13. 'deg-prod'      product of degree
+%       If not specified, Input.TopoType will be the name of the topological form 
+%
+%  ParamRange = A 5x2 matrix where the first column gives the lower, and
+%  the second the upper, bounds for the following parameters (see the basic
+%  form outlined at the top):
+%       ParamRange(1,:) = eta
+%       ParamRange(2,:) = gam
+%       ParamRange(3,:) = a1
+%       ParamRange(4,:) = a2
+%       ParamRange(5,:) = lam
+%
+%  pow = the severity/exponent for the opotimisation. Higher values will
+%  make it more likely to sample from cells that have the smallest maxKS
+%
+%  nlvl = number of steps in the optimisation
+%
+%  ndraw = number of repetitions/samples per step
+%
+%   The following are optional specifications for Input (will be set to
+%   defaults if not set):
+%
+%   PD1Func = 'power-law' or 'exponential'. Controls the interaction between
+%   PD1 and eta. Defaults to 'exponential'
+%
+%   TopoFunc = 'power-law' or 'exponential'. Controls the interaction between T
+%   and eta. Defaults to 'power-law'
+%
+%   PD2Func = 'power-law' or 'exponential'. Controls the interaction between
+%   PD2 and lam. Defaults to 'power-law'
+%
+%   epsilon = an amount to add to each edges topology value in the model (to
+%   ensure each edge doesn't become undefinied). Defaults to 0 when 
+%   Input.AddMult = 'Add' or 1e-6 when Input.AddMult = 'Mult'
+%
+%   seed = a seed network. If none is desired set to [] (default)
+%
+%   useParfor = set to 1 to use parfor loops where possible (0 by default)
+%
+%   normsum = set to 1 to normalise each term by its sum (set to 0 by
+%   default, which normalises by the max)
+
+
+if ~isfield(Input,'epsilon')
+    switch Input.AddMult
+    case 'Add'
+    Input.epsilon = 0;
+    case 'Mult'
+    Input.epsilon = 1e-6;
+    end
+end
+
+if ~isfield(Input,'normsum')
+    Input.normsum = 0;  
+end
+
+if ~isfield(Input,'seed')
+    Input.seed = [];  
+end
+
+if ~isfield(Input,'useParfor')
+ Input.useParfor = 0;  
+end
+
+TopoTypes = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
+if ~isfield(Input,'TopoTypes') 
+    Input.TopoType = TopoTypes{Input.ModelNum};
+else
+   if ~strcmp(TopoTypes{Input.ModelNum},Input.TopoType) 
+      error('Input.ModelNum and Input.TopoType do not match!')
+   end
+end
 
 ADeg = sum(A);
 numProperties = 4;
@@ -77,7 +191,7 @@ for ilvl = 1:nlvl
                 
         parfor i = 1:ndraw          
                 [B,btemp{i}] = GrowthModel(PD1,PD2,ptsnew(i,:),m,Input);
-                [maxKSpar(i),KSpar(i,:)] = Betzel_energy(A,A_dist,B);
+                [maxKSpar(i),KSpar(i,:)] = calc_maxKS(A,A_dist,B);
                 Cpar(i) = corr(sum(B)',ADeg','Type','Spearman');
         end
         
@@ -91,7 +205,7 @@ for ilvl = 1:nlvl
         for i = 1:ndraw
             indHere = indnew(i);
             [B,b{indHere}] = GrowthModel(PD1,PD2,ptsnew(i,:),m,Input);
-            [maxKS(indHere),KS(indHere,:)] = Betzel_energy(A,A_dist,B);
+            [maxKS(indHere),KS(indHere,:)] = calc_maxKS(A,A_dist,B);
             DegCorr(indHere) = corr(sum(B)',ADeg','Type','Spearman');
         end
     

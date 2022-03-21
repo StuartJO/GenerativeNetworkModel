@@ -93,88 +93,76 @@ close all
 %% Figure 5
 % This will take a very very long time to run.
 % 
-% MdlColors = [152,78,163;...
-% 55,126,184;...
-% 228,26,28;...
-% 77,175,74;...
-% 255,127,0;...
-% 66,224,245;...
-% 166,86,40;...
-% 77,190,238]./255;
-% 
-% load('random200_data4physmdl.mat')
-% for i = 1:length(adjs)
-% 
-%     A = double(adjs{i}>0);
-%     EmpData{1}(i,:) = sum(A); 
-%     EmpData{3}(i,:) = betweenness_bin(A);
-%     EmpData{2}(i,:) = clustering_coef_bu(A)';
-%     EmpData{4}(i,:) = (sum(A_dist.*A))./EmpData{1}(i,:); 
-% 
-% end
-% 
-% rand200_phys_growth_topo = load('random200_FCV_PhysMdls_Growth_1_output_Topography.mat');
-% 
-% MDL = [4 5 10 1];
-% 
-% Model = rand200_phys_growth_topo.Topography{4};
-% 
-% CorrDATA = rand200_phys_mdls{2}.TopographyCorrs(MDL);
-% CorrDATA{2} = rand200_phys_mdls{1}.TopographyCorrs{5};
-% 
-% SurfaceData.vertices = lh_inflated_verts;
-% SurfaceData.faces = lh_faces;
-% SurfaceData.parc = lh_rand200;
-% 
-% load('Missing_rois.mat')
-% SurfaceData.MissingROI = rand200_missing;
-% 
-% plotSpatialEmbeddings(EmpData,Model,CorrDATA,SurfaceData,LABELS(MDL),MdlColors([4 4 2 1],:),[FIGURE_LOCATION,'/Figure5']);
-% 
-% close all
+MdlColors = [152,78,163;...
+55,126,184;...
+228,26,28;...
+77,175,74;...
+255,127,0;...
+66,224,245;...
+166,86,40;...
+77,190,238]./255;
+
+load('random200_data4physmdl.mat')
+for i = 1:length(adjs)
+
+    A = double(adjs{i}>0);
+    EmpData{1}(i,:) = sum(A); 
+    EmpData{3}(i,:) = betweenness_bin(A);
+    EmpData{2}(i,:) = clustering_coef_bu(A)';
+    EmpData{4}(i,:) = (sum(A_dist.*A))./EmpData{1}(i,:); 
+
+end
+
+rand200_phys_growth_topo = load('random200_FCV_PhysMdls_Growth_1_output_Topography.mat');
+
+MDL = [4 5 10 1];
+
+Model = rand200_phys_growth_topo.Topography{4};
+
+CorrDATA = rand200_phys_mdls{2}.TopographyCorrs(MDL);
+CorrDATA{2} = rand200_phys_mdls{1}.TopographyCorrs{5};
+
+SurfaceData.vertices = lh_inflated_verts;
+SurfaceData.faces = lh_faces;
+SurfaceData.parc = lh_rand200;
+
+load('Missing_rois.mat')
+SurfaceData.MissingROI = rand200_missing;
+
+plotSpatialEmbeddings(EmpData,Model,CorrDATA,SurfaceData,LABELS(MDL),MdlColors([4 4 2 1],:),[FIGURE_LOCATION,'/Figure5']);
+
+close all
 
 %% Figure S2
-% 
-% rand200_data = load('random200_data4topomdl.mat');
-% add3_optim_mdls = load('random200_TopoMdls_add3_Growth_0_output.mat', 'OptimMdl');
-% add2_optim_mdls = load('random200_TopoMdls_add2_Growth_0_output.mat', 'OptimMdl');
-% mult2_optim_mdls = load('random200_TopoMdls_mult2_Growth_0_output.mat', 'OptimMdl');
-% 
-% % NETS{1} = mult2_optim_mdls.OptimMdl{3}.min_maxKS.net;
-% % NETS{2} = add2_optim_mdls.OptimMdl{3}.min_maxKS.net;
-% % NETS{3} = add3_optim_mdls.OptimMdl{3}.min_maxKS.net;
-% 
-% NETS{1} = mult2_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
-% NETS{2} = add2_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
-% NETS{3} = add3_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
-% 
-% % for j = 1:3
-% % for i = 1:length(NETS{j})
-% %     a = zeros(100);
-% %     a(NETS{j}{i}) = 1;
-% %     a = a + a';
-% %     NETS_FULL{j}{i} = a;
-% % end
-% % end
-% for j = 1:3
-%     IND = 1;
-% for i = 1:length(NETS{j})
-%     for k = 1:100
-%     a = zeros(100);
-%     a(NETS{j}{k}{i}) = 1;
-%     a = a + a';
-%     NETS_FULL{j}{IND} = a;
-%     IND = IND + 1;
-%     end
-% end
-% end
-% 
-% figure('Position',[680   320   783   658])
-% CompareEdgeLengtheCDF(rand200_data.A_dist,NETS_FULL{1},NETS_FULL{2},NETS_FULL{3},rand200_data.adjs)
-% 
-% exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS2.png'],'resolution',300)
-% 
-% close all
+
+rand200_data = load('random200_data4topomdl.mat');
+add3_optim_mdls = load('random200_TopoMdls_add3_Growth_0_output.mat', 'OptimMdl');
+add2_optim_mdls = load('random200_TopoMdls_add2_Growth_0_output.mat', 'OptimMdl');
+mult2_optim_mdls = load('random200_TopoMdls_mult2_Growth_0_output.mat', 'OptimMdl');
+
+NETS{1} = mult2_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
+NETS{2} = add2_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
+NETS{3} = add3_optim_mdls.OptimMdl{3}.min_maxKS.repeats.nets;
+
+for j = 1:3
+    IND = 1;
+for i = 1:length(NETS{j})
+    for k = 1:100
+    a = zeros(100);
+    a(NETS{j}{k}{i}) = 1;
+    a = a + a';
+    NETS_FULL{j}{IND} = a;
+    IND = IND + 1;
+    end
+end
+end
+
+figure('Position',[680   320   783   658])
+CompareEdgeLengtheCDF(rand200_data.A_dist,NETS_FULL{1},NETS_FULL{2},NETS_FULL{3},rand200_data.adjs)
+
+exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS2.png'],'resolution',300)
+
+close all
 
 %% Figure S4
 
@@ -190,7 +178,7 @@ print([FIGURE_LOCATION,'/FigureS4B.png'],'-dpng','-r300')
 
 close all
 
-%% Figure S4
+%% Figure S5
 
 % For eta parameters, times by -1, because the paper specifies eta is
 % always <0 but the code can accept positive values. To "avoid" confusion,
@@ -262,7 +250,27 @@ print([FIGURE_LOCATION,'/FigureS5C.png'],'-dpng','-r300')
 
 close all
 
-%% Figure S5
+%% Figure S6
+
+KS_PLOT_LABELS = LABELS;
+for i = 1:10
+     KS{i} = rand200_phys_mdls{1}.KS{i};
+   KS_PLOT_LABELS{i} = ['Static ',LABELS{i}];
+end
+
+idx = 11;
+for i = [1 2 4 7 9 10] 
+         KS{idx} = rand200_phys_mdls{2}.KS{i};
+   KS_PLOT_LABELS{idx} = ['Growth ',LABELS{i}];
+   idx = idx + 1;
+end
+VisualiseKSstats(KS,KS_PLOT_LABELS,4,4)
+
+exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS6.png'],'resolution',300)
+
+close all
+
+%% Figure S7
 
 scha200_phys_mdls{1} = load('Schaefer200_FCV_PhysMdls_Growth_0_output.mat');
 scha200_phys_mdls{2} = load('Schaefer200_FCV_PhysMdls_Growth_1_output.mat');
@@ -295,27 +303,7 @@ exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS7.png'],'resolution',300)
 
 close all
 
-%% Figure S6
-
-KS_PLOT_LABELS = LABELS;
-for i = 1:10
-     KS{i} = rand200_phys_mdls{1}.KS{i};
-   KS_PLOT_LABELS{i} = ['Static ',LABELS{i}];
-end
-
-idx = 11;
-for i = [1 2 4 7 9 10] 
-         KS{idx} = rand200_phys_mdls{2}.KS{i};
-   KS_PLOT_LABELS{idx} = ['Growth ',LABELS{i}];
-   idx = idx + 1;
-end
-VisualiseKSstats(KS,KS_PLOT_LABELS,4,4)
-
-exportgraphics(gcf,[FIGURE_LOCATION,'/FigureS6.png'],'resolution',300)
-
-close all
-
-%% Figure S7
+%% Figure S8
 
 rand200_phys_optim{1} = load('random200_PhysMdls_Growth_0_output.mat','DegCorr');
 rand200_phys_optim{2} = load('random200_PhysMdls_Growth_1_output.mat','DegCorr');
@@ -350,38 +338,34 @@ close all
 %% Figures not in paper
 % These were just useful things for reference:
 
-[h,p] = ComputeSigDiff([rand200_topo_mdls{1,1}.Fcv rand200_topo_mdls{1,2}.Fcv],.05,325,1);
-
-imagesc(h)
-xticks(1:26)
-yticks(1:26)
-
-for i = 1:13
-   KS_PLOT_TOPO_LABELS{i} = ['Static ',TOPO_MDL_LABELS{i}];
-end
-for i = 14:26
-   KS_PLOT_TOPO_LABELS{i} = ['Growth ',TOPO_MDL_LABELS{i-13}];
-end
-xticklabels(KS_PLOT_TOPO_LABELS)
-yticklabels(KS_PLOT_TOPO_LABELS)
-xtickangle(45)
-
-
-
-[h,p] = ComputeSigDiff([rand200_topo_mdls{2,1}.Fcv rand200_topo_mdls{2,2}.Fcv],.05,325,1);
-
-
-
-imagesc(h)
-xticks(1:26)
-yticks(1:26)
-
-for i = 1:13
-   KS_PLOT_TOPO_LABELS{i} = ['Static ',TOPO_MDL_LABELS{i}];
-end
-for i = 14:26
-   KS_PLOT_TOPO_LABELS{i} = ['Growth ',TOPO_MDL_LABELS{i-13}];
-end
-xticklabels(KS_PLOT_TOPO_LABELS)
-yticklabels(KS_PLOT_TOPO_LABELS)
-xtickangle(45)
+% [h,p] = ComputeSigDiff([rand200_topo_mdls{1,1}.Fcv rand200_topo_mdls{1,2}.Fcv],.05,325,1);
+% 
+% imagesc(h)
+% xticks(1:26)
+% yticks(1:26)
+% 
+% for i = 1:13
+%    KS_PLOT_TOPO_LABELS{i} = ['Static ',TOPO_MDL_LABELS{i}];
+% end
+% for i = 14:26
+%    KS_PLOT_TOPO_LABELS{i} = ['Growth ',TOPO_MDL_LABELS{i-13}];
+% end
+% xticklabels(KS_PLOT_TOPO_LABELS)
+% yticklabels(KS_PLOT_TOPO_LABELS)
+% xtickangle(45)
+% 
+% [h,p] = ComputeSigDiff([rand200_topo_mdls{2,1}.Fcv rand200_topo_mdls{2,2}.Fcv],.05,325,1);
+% 
+% imagesc(h)
+% xticks(1:26)
+% yticks(1:26)
+% 
+% for i = 1:13
+%    KS_PLOT_TOPO_LABELS{i} = ['Static ',TOPO_MDL_LABELS{i}];
+% end
+% for i = 14:26
+%    KS_PLOT_TOPO_LABELS{i} = ['Growth ',TOPO_MDL_LABELS{i-13}];
+% end
+% xticklabels(KS_PLOT_TOPO_LABELS)
+% yticklabels(KS_PLOT_TOPO_LABELS)
+% xtickangle(45)

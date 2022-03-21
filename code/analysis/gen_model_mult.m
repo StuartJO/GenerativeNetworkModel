@@ -1,7 +1,6 @@
 function [B,b] = gen_model_mult(A,PD,m,modeltype,modelvar,PDexpo,gam,epsilon)
-% GENERATIVE_MODEL          Run generative model code
-%
-%   B = GENERATIVE_MODEL(A,D,m,modeltype,modelvar,params)
+% gen_model_mult          Run generative model code for the multiplicative
+% model
 %
 %   Generates synthetic networks using the models described in the study by
 %   Betzel et al (2016) in Neuroimage.
@@ -19,14 +18,14 @@ function [B,b] = gen_model_mult(A,PD,m,modeltype,modelvar,PDexpo,gam,epsilon)
 %           modelvar,   specifies whether the generative rules are based on
 %                       power-law or exponential relationship
 %                       ({'powerlaw'}|{'exponential})
-%           PDexpo,     the parameter controlling the vlaues in PD. If
+%           PDexpo,     the parameter controlling the values in PD. If
 %                       there are multipe PD matrices, PDexpo should be a
 %                       vector where each index gives the marameter for the
 %                       corresponding PD matrix
 %           gam,        the parameter controlling topology
 %           epsilon,    the baseline probability of forming a particular
 %                       connection (should be a very small number
-%                       {default = 1e-5}).
+%                       {default = 1e-6}).
 %
 %   Output:
 %           B,          an adjacency matrix
@@ -63,7 +62,7 @@ function [B,b] = gen_model_mult(A,PD,m,modeltype,modelvar,PDexpo,gam,epsilon)
 %   Edited by Stuart Oldham, Monash University 2021
 
 if ~exist('epsilon','var')
-    epsilon = 1e-5;
+    epsilon = 1e-6;
 end
 
 n = length(A);

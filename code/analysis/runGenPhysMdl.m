@@ -1,11 +1,34 @@
-function runGenPhysMdl(SUB,GROWTH,PARC,SAVEDIR,MDLS)
+function runGenPhysMdl(SUB,GROWTH,PARC,SAVELOC,MDLS,save_suffix)
+
+% This is a wrapper for all the physiological models in the paper.
+%
+% Inputs:
+%
+% SUB = subject to run the models on
+%
+% GROWTH = 1 to run a growth model, 0 for a static model
+%
+% PARC = value between 1-3 to indicate which parcellation/data to use,1 =
+%   random200, 2 = Schaefer200, 3 = random200 with 18 timepoints (remove
+%   adult timepoints)
+%
+% SAVELOC = location to save output (optional, will save in current 
+%   directory by default)
+%
+% MDLS = index of models to run (optional, defaults to 1:10)
+%
+% save_suffix = a string to add to the end of the output filename
 
 if nargin < 4
-   SAVEDIR = './'; 
+   SAVELOC = '.'; 
 end
 
 if nargin < 5
     MDLS = 1:10;
+end
+
+if nargin < 6
+   save_suffix = ''; 
 end
 
 Input.Growth = GROWTH;
@@ -20,6 +43,8 @@ Input.normsum = 0;
 Input.ndraw = 2000;
 Input.pow = 2;
 Input.nlvl = 5;
+
+PHYS_MDL_NAME = {'Spatial','Spatial+cCGE','cCGE','Spatial+uCGE','uCGE','MPC_{HIST}','Spatial+MPC_{HIST}','MPC_{T1/T2}','Spatial+MPC_{T1/T2}','Matching'};
 
 if PARC == 1
 mdldata = load('random200_data4physmdl.mat');
@@ -252,8 +277,8 @@ Input.ParamRange(4,:) = [0 0];
 end
 
 Output = GenMdl(A,A_dist,D,PD,Input);
+Output.Input.PhysMdlName = PHYS_MDL_NAME{MDL};
 
-if length(MDLS) > 1
 Outputs.maxKS{MDLIND} = Output.maxKS;
 Outputs.DegCorr{MDLIND} = Output.DegCorr;
 Outputs.KS{MDLIND} = Output.KS;
@@ -269,16 +294,13 @@ Outputs.bestDegCorr_maxKS{MDLIND} = Output.bestDegCorr_maxKS;
 Outputs.bestDegCorr_KS{MDLIND} = Output.bestDegCorr_KS;
 Outputs.bestDegCorr_b{MDLIND} = Output.bestDegCorr_b;
 Outputs.bestDegCorr_DegCorr{MDLIND} = Output.bestDegCorr_DegCorr;
+
 % Save the input configurations to output. Helps to keep track of what was
 % done
 Outputs.Input{MDLIND} = Output.Input;
     MDLIND = MDLIND + 1;
-end
 
 end
 
-if length(MDLS) > 1
-    save([SAVEDIR,parcname,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Outputs','-v7.3')
-else
-    save([SAVEDIR,parcname,'_PhysMdls_Mdl_',num2str(MDL),'_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),'.mat'],'-struct','Output','-v7.3')
-end
+save([SAVELOC,'/',parcname,'_PhysMdls_Sub_',num2str(SUB),'_add3_Growth_',num2str(GROWTH),save_suffix,'.mat'],'-struct','Outputs','-v7.3')
+

@@ -1,55 +1,47 @@
 function [B,b] = GrowthModel(PD1,PD2,P,m,Input)
 
-%(AddOrMult,D,TopoType,Eta,Gamma,alpha,Kalpha,m,AddSingle,epsilon,InitialSEED,DistFunc,TopoFunc,PDM,PDMFunc,normsum)
-
 % This function will generate a network while accounting for changes in the
 % distances of nodes over time.
-
-% Inputs:                           D = a distance matrix or a cell of 
-%                                       distances matrices
-%                            TopoType = the generative rule (see below)
-%                                 Eta = the parameter controlling distance
-%                               Gamma = the parameter controlling topology
-%                               alpha = a vector of alpha values. alpha(1)
-%                                       is used for the distance function,
-%                                       alpha(2) is for the topology, while
-%                                       alpha(3) is for the "O" function
-%                                       (if "O" varies across X timepoints,
-%                                       alpha(3:X+3) needs to be specified
-%                         m = a scaler indicating the desired
-%                                       density/edges of the network, or a 
-%                                       vector of values indicating the 
-%                                       density/edges at each desired
-%                                       timepoint (must be the same length
-%                                       as D)
-%                           AddSingle = if set to 0, when generating a
-%                                       network, at each timepoint the 
-%                                       connection probabilities will be
-%                                       calculated once and connections
-%                                       will be added to the network
-%                                       simultaneously based on these
-%                                       probabilities. If set to 1,
-%                                       connections are added in one at a
-%                                       time and the probabilities are also
-%                                       updated each time
-%                                   E = the baseline probability of forming 
-%                                       a connection (default = 1e-5)
-%                         InitialSEED = an initial network a seed
-%                                       connections. Set as empty if there
-%                                       is no seed network (default)
-%                            DistFunc = specifies whether the generative 
-%                                       rules for distance are based on
-%                                       power-law ('powerlaw') or 
-%                                       exponential ('exponential') 
-%                                       function (default = 'exponential')
-%                            TopoFunc = specifies whether the generative 
-%                                       rules for topology are based on
-%                                       power-law ('powerlaw') or 
-%                                       exponential ('exponential') 
-%                                       function (default = 'powerlaw')
-% 
-% List of generative rules impliamented (adapted from code made available
-% by Rick Betzel)
+% The model has the following basic form for defining connection probabilities:
+%
+% (PD1^eta)*a1(T^gam)*a2(PD2^lam) or (PD1^eta)+a1(T^gam)+a2(PD^lam)
+%
+% where PD1/PD2 is a measure of distance/similarity between a pair of
+% nodes; T is some measure of the topology between a pair of nodes; and
+% eta, gam, lam, a1, and a2 are free parameters. Note that each power-law
+% interaction (e.g., PD1^eta) can be replaced with an exponential function
+% (e.g., exp(eta*PD1)).
+%
+% See the bottom of this header as to the model form appears different to 
+% what is in the paper/why there are seemingly more than 3 free parameters
+%
+% Teachnically, this function is a wrapper for another function
+% (GrowthModel) which itself is a wrapper for functions which actually run
+% the generative model. Turtles all the way down.
+%
+% Inputs:
+%
+% PD1 = Either a matrix indicating pairwise similarity/distances between nodes, or a cell where each
+% element contains such a distance matrix, to be used for the modelling itself.
+% The "growth" model is specied by the latter of these options.
+%
+% PD2 = A second matrix indicating pairwise similarity/distances between nodes in
+% A (unlike with PD1 a cell cannot be used as an input here). This could be 
+% correlated gene expression, similarity in histology etc.
+%
+% m = the number of edges for the model to form. When doing a growth model
+% this should be a vector where each elemenet specifies the number of edges
+% which should be present in the network at the end of that timestep (it is
+% NOT the number of edges to form at each step, but rather the cumulative
+% edges). Can also be specified as the density value
+%
+% Input = a structure containing the many possible options needed to
+% configure the model. The following fields are required:
+%   AddMult = 'Add' or 'Mult', if the multiplicative or additive form is to
+%   be used
+%
+%   ModelNum = A value between 1 and 13, each corresponds to the following
+%   topology form:
 %       1.  'sptl'          spatial model
 %       2.  'neighbors'     number of common neighbors
 %       3.  'matching'      matching index
@@ -63,8 +55,46 @@ function [B,b] = GrowthModel(PD1,PD2,P,m,Input)
 %       11. 'deg-max'       maximum degree
 %       12. 'deg-diff'      difference in degree
 %       13. 'deg-prod'      product of degree
+%       If not specified, Input.TopoType will be the name of the topological form 
 %
-% Written by Stuart Oldham, 2018
+%  ParamRange = A 5x2 matrix where the first column gives the lower, and
+%  the second the upper, bounds for the following parameters (see the basic
+%  form outlined at the top):
+%       ParamRange(1,:) = eta
+%       ParamRange(2,:) = gam
+%       ParamRange(3,:) = a1
+%       ParamRange(4,:) = a2
+%       ParamRange(5,:) = lam
+%
+%   PD1Func = 'power-law' or 'exponential'. Controls the interaction between
+%   PD1 and eta. Defaults to 'exponential'
+%
+%   TopoFunc = 'power-law' or 'exponential'. Controls the interaction between T
+%   and eta. Defaults to 'power-law'
+%
+%   The following are optional specifications for Input (will be set to
+%   defaults if not set):
+%
+%       PD2Func = 'power-law' or 'exponential'. Controls the interaction between
+%       PD2 and lam. Defaults to 'power-law'. If PD2 ~= [] then this is
+%       required
+%
+%       epsilon = an amount to add to each edges topology value in the model (to
+%       ensure each edge doesn't become undefinied). Defaults to 0 when 
+%       Input.AddMult = 'Add' or 1e-6 when Input.AddMult = 'Mult'
+%
+%       seed = a seed network. If none is desired set to [] (default)
+%
+%       normsum = set to 1 to normalise each term by its sum (set to 0 by
+%       default, which normalises by the max)
+%
+% Outputs:
+%
+% B = an adjanceny matrix of the generated network
+%
+% b = an array of edge indices 
+%
+% Written by Stuart Oldham, 2021
 
 %% Check inputs
 if iscell(PD1)
@@ -81,14 +111,31 @@ if iscell(PD1)
     end
 end
 
+if ~isfield(Input,'epsilon')
+    switch Input.AddMult
+    case 'Add'
+    Input.epsilon = 0;
+    case 'Mult'
+    Input.epsilon = 1e-6;
+    end
+end
+
+if ~isfield(Input,'normsum')
+    normsum = 0;  
+else
+    normsum = Input.normsum;  
+end
+
 TopoType = Input.TopoType;
 
 epsilon = Input.epsilon;
 
 AddMult = Input.AddMult;
 
-if isempty(Input.seed) 
-    Seed = zeros(N);
+if isempty(Input.seed) || ~isfield(Input,'seed')
+   Seed = zeros(N);
+else
+   Seed = Input.seed; 
 end
 
 if ~isfield(Input,'PD2Func')
@@ -96,12 +143,10 @@ if ~isfield(Input,'PD2Func')
         error('PD2 exists but PD2Func is not defined')
     end
     % If not defined we just set it to 'powerlaw', won't do anything
-PD2Func = 'powerlaw';
+    PD2Func = 'powerlaw';
 else
-PD2Func = Input.PD2Func;
+    PD2Func = Input.PD2Func;
 end
-
-normsum = Input.normsum;
 
 if ~iscell(PD2) && ~isempty(PD2)
     PD2 = num2cell(PD2,[1 2]);
@@ -169,43 +214,43 @@ alpha_vals = [1 a1 a2];
 
 for I = 1:length(Dists)
         
-        if m(I) <= 1
-            desiredEdges = ceil(m(I)*N*(N-1)/2);
-        else
-            desiredEdges = m(I);
-        end 
-                % PD1 and PD2 are combined into one cell
-                PD = [Dists{I} PD2];
-                
-                if ~iscell(PD) && ~isempty(PD)
-                    PD = num2cell(PD,[1 2]);
-                end
-                                
-                switch AddMult
-                    case 'Add'
-             
-                        if normsum == 0
-                [B,btemp] = gen_model_add_normmax(B,PD,desiredEdges,TopoType,modelvar,PDexpo,gam,alpha_vals,epsilon);
-                        else
-                [B,btemp] = gen_model_add_normsum(B,PD,desiredEdges,TopoType,modelvar,PDexpo,gam,alpha_vals,epsilon);
-                           
-                        end
-                    case 'Mult'
-                [B,btemp] = gen_model_mult(B,PD,desiredEdges,TopoType,{{modelvar{1},modelvar{3}},modelvar{2}},PDexpo,gam,epsilon);             
-         
-                end
-                
-        if I == 1 
-			b = btemp;
-		else
-        		if m(I-1) <= 1
-            			PreviousDesiredEdges = ceil(m(I-1)*N*(N-1)/2);
-        		else
-            			PreviousDesiredEdges = m(I-1);
-        		end 
+    if m(I) <= 1
+        desiredEdges = ceil(m(I)*N*(N-1)/2);
+    else
+        desiredEdges = m(I);
+    end 
+            % PD1 and PD2 are combined into one cell
+            PD = [Dists{I} PD2];
 
-			b = [b; btemp(PreviousDesiredEdges+1:desiredEdges)];
-		end
+            if ~iscell(PD) && ~isempty(PD)
+                PD = num2cell(PD,[1 2]);
+            end
+
+            switch AddMult
+                case 'Add'
+
+                    if normsum == 0
+            [B,btemp] = gen_model_add_normmax(B,PD,desiredEdges,TopoType,modelvar,PDexpo,gam,alpha_vals,epsilon);
+                    else
+            [B,btemp] = gen_model_add_normsum(B,PD,desiredEdges,TopoType,modelvar,PDexpo,gam,alpha_vals,epsilon);
+
+                    end
+                case 'Mult'
+            [B,btemp] = gen_model_mult(B,PD,desiredEdges,TopoType,{{modelvar{1},modelvar{3}},modelvar{2}},PDexpo,gam,epsilon);             
+
+            end
+
+    if I == 1 
+        b = btemp;
+    else
+            if m(I-1) <= 1
+                    PreviousDesiredEdges = ceil(m(I-1)*N*(N-1)/2);
+            else
+                    PreviousDesiredEdges = m(I-1);
+            end 
+
+        b = [b; btemp(PreviousDesiredEdges+1:desiredEdges)];
+    end
                     
 
 end

@@ -4,6 +4,7 @@ function CV_output = CrossValidateModel(adjs,A_dist,PD1,PD2,P,INSTANCES,Input)
 % to generate a network, and calculate KS, max(KS), and topography 
 % information off of this
 
+% Need to shuffle if running on a cluster
 rng('shuffle')
 
 TopoTypes = {'sptl','neighbors','matching','clu-avg','clu-min','clu-max','clu-diff','clu-prod','deg-avg','deg-min','deg-max','deg-diff','deg-prod','com'};
@@ -41,13 +42,14 @@ for j = 1:Nparams
         ctemp = zeros(INSTANCES,4);
         b = cell(1,INSTANCES);
         
+        % Don't bother with parfor if only making one iteration
         if ~useParfor || INSTANCES == 1
 
          for k = 1:INSTANCES            
         
             [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
 
-            [maxks(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals] = Betzel_energy(A,A_dist,B);
+            [maxks(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals] = calc_maxKS(A,A_dist,B);
             deg(k,:) = NodeVals{1};
             clu(k,:) = NodeVals{2};
             bet(k,:) = NodeVals{3};
@@ -75,7 +77,7 @@ for j = 1:Nparams
         
         [B,b{k}] = GrowthModel(PD1,PD2,p,m,Input);
         
-        [maxks(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals] = Betzel_energy(A,A_dist,B);
+        [maxks(k,:),KSvals(k,:),~,~,A_topo_temp,NodeVals] = calc_maxKS(A,A_dist,B);
                 deg(k,:) = NodeVals{1};
                 clu(k,:) = NodeVals{2};
                 bet(k,:) = NodeVals{3};

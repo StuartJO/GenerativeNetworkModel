@@ -1,4 +1,4 @@
-function CV = Compile_FCV(fileformat,mdls,Iters,nsub,SaveNets)
+function CV = CompileCVOutputs(fileformat,mdls,Iters,nsub,SaveNets)
 
 % This function allows you to compile CV results into a single output.
 %
@@ -30,6 +30,31 @@ function CV = Compile_FCV(fileformat,mdls,Iters,nsub,SaveNets)
 % on top of all the statistic (0 by default).
 %
 % Output:
+%
+% CV = a structure with the following fields:
+%
+%   KS{mdl} = the KS values for all networks produced during
+%       crossvalidation for model number 'mdl'
+%
+%   TopographyCorrs{mdl} = the correlation between the model network and 
+%       empirical topological data for all networks produced during
+%       crossvalidation for model number 'mdl'
+%
+%   Fcv{mdl} = the FCV value for all networks produced during
+%       crossvalidation for model number 'mdl'
+%
+%   P{mdl} = the parameters used during crossvalidation for model number 
+%       'mdl'
+%
+%   CV.Topography{mdl}{t} = the topology values for measure 't' (1 = degree
+%       ; 2 = clustering; 3 = betweenness; 4 = mean edge length) for all 
+%       networks produced during crossvalidation for model number 'mdl'.
+%       Rows correspond to each network, columns correspond to nodes.
+%
+%   CV.DataID{mdl} = for each network for model number 'mdl', identifies
+%       which subjects network was being modelled (first column), with
+%       which subjects parameters (second column), and the iteration number
+%       (third column)
 
 if nargin < 5
     SaveNets = 0;
@@ -82,25 +107,25 @@ totalFcvDataPoints = ((nsub*nsub)-nsub)*nIters;
 
 Mdsl2Compile = length(mdls);
 
-for j = 1:Mdsl2Compile
+for mdl = 1:Mdsl2Compile
     tic
     PointsPerIter = ((nsub*nsub)-nsub)*nperIterFile;
     data = zeros(nsub,nsub,nIters);
     if SaveNets
         nets = cell(nsub,nsub);
     end
-    CV.KS{j} = zeros(totalFcvDataPoints,4);
-    CV.TopographyCorrs{j} = zeros(totalFcvDataPoints,4);
-    CV.DataID{j} = zeros(totalFcvDataPoints,3);
+    CV.KS{mdl} = zeros(totalFcvDataPoints,4);
+    CV.TopographyCorrs{mdl} = zeros(totalFcvDataPoints,4);
+    CV.DataID{mdl} = zeros(totalFcvDataPoints,3);
     Topography = cell(1,4);
     
-    ind = 1:nperIterFile;
+    IterInd = 1:nperIterFile;
      
     for itr = 1:length(IterFiles)
         if NoIterFiles
-           CVindata = load([file_start,num2str(mdls(j)),file_end]);
+           CVindata = load([file_start,num2str(mdls(mdl)),file_end]);
         else
-           CVindata = load([file_start,num2str(mdls(j)),file_middle,num2str(itr),file_end]) ;   
+           CVindata = load([file_start,num2str(mdls(mdl)),file_middle,num2str(itr),file_end]) ;   
         end
         
         NNodes = CVindata.Input.NNodes;
@@ -134,14 +159,14 @@ for j = 1:Mdsl2Compile
                 end 
                 
                 % Save all the KS and correlation data into a huge array
-                CV.KS{j}(ind,:) = CVindata.KS{sub_n,sub_P}(1:nperIterFile,:);
-                CV.TopographyCorrs{j}(ind,:) = CVindata.TopographyCorrs{sub_n,sub_P}(1:nperIterFile,:);
+                CV.KS{mdl}(IterInd,:) = CVindata.KS{sub_n,sub_P}(1:nperIterFile,:);
+                CV.TopographyCorrs{mdl}(IterInd,:) = CVindata.TopographyCorrs{sub_n,sub_P}(1:nperIterFile,:);
                 % CV.DataID gives a "barcode" indicating which network,
                 % which set of parameters and for which iteration that
                 % respective data belongs to
-                CV.DataID{j}(ind,:) = [sub_n sub_P itr];
+                CV.DataID{mdl}(IterInd,:) = [sub_n sub_P itr];
 
-                ind = ind + nperIterFile;
+                IterInd = IterInd + nperIterFile;
                 topo_ind = topo_ind+nperIterFile;
             end
             
@@ -154,25 +179,25 @@ for j = 1:Mdsl2Compile
        end
    
     end
-     CV.Inputs{j} = CVindata.Input;
+     CV.Inputs{mdl} = CVindata.Input;
 % "...it ain't stupid"     
      topo_ind2 = 1:PointsPerIter;
      for itr = 1:length(IterFiles)
          for t = 1:4
-            CV.Topography{j}{t}(topo_ind2,:) = Topography{t}{itr};
+            CV.Topography{mdl}{t}(topo_ind2,:) = Topography{t}{itr};
          end
         topo_ind2 = topo_ind2+PointsPerIter;
      end
     clear Topography
 
         timesec = toc;
-        disp(['Finished ',num2str(j),' in ',num2str(timesec),' seconds'])
+        disp(['Finished ',num2str(mdl),' in ',num2str(timesec),' seconds'])
         
     if SaveNets
-    	CV.nets{j} = nets;
+    	CV.nets{mdl} = nets;
     end
     % Take the mean over all iterations, and then take the mean over all
     % the parameters applied to a given subject
-   CV.Fcv{j} = nanmean(nanmean(data,3),2)'; 
-   CV.P{j} = CVindata.P;
+   CV.Fcv{mdl} = nanmean(nanmean(data,3),2)'; 
+   CV.P{mdl} = CVindata.P;
 end

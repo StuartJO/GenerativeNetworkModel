@@ -18,9 +18,9 @@ echo $SLURM_ARRAY_TASK_ID
 GROWTH=$1
 PARC=$2
 module load matlab/r2017b
-#module load matlab
 
-#matlab -nodisplay -nosplash -r "RunCGETest($SUB); exit"
-#matlab -nodisplay -nosplash -r "RunMdlsGeneData($SUB); exit"
-matlab -nodisplay -nosplash -r "addpath(genpath(('/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel'))); addpath('/projects/kg98/stuarto/BCT'); RerunGenPhysMdl($SUB,$GROWTH,$PARC); exit"
+CODEDIR="/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel"
+DATADIR="/fs02/hf49/Stuart/GrowthModel_newParc/GenerativeNetworkModel/data"
+
+matlab -nodisplay -nosplash -r "addpath(genpath(('${CODEDIR}'))); addpath('/projects/kg98/stuarto/BCT'); runGenPhysMdl($SUB,$GROWTH,$PARC,'${DIRDATA}'); exit"
 

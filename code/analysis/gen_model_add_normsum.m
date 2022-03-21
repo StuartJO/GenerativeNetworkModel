@@ -1,35 +1,43 @@
-function [B,b] = gen_model_add_normsum(A,PDMs,m,modeltype,modelvar,eta,gam,alpha,epsilon)
-% GENERATIVE_MODEL          Run generative model code
-%
-%   B = GENERATIVE_MODEL(A,D,m,modeltype,modelvar,params)
+function [B,b] = gen_model_add_normsum(A,PDMs,m,modeltype,modelvar,PDexpo,gam,alpha,epsilon)
+% gen_model_add_normsum          Run generative model code for the additive
+% model normalising by the sum for each term
 %
 %   Generates synthetic networks using the models described in the study by
-%   Betzel et al (2016) in Neuroimage.
+%   Oldham et al (2022) in ????.
 %
 %   Inputs:
 %           A,          binary network of seed connections
-%           D,          Euclidean distance/fiber length matrix
-%           O,          Other distance metrics, with each as the third
-%                       dimension in a matrix
+%           PDMs,       Euclidean distance/fiber length/node similarity
+%                       matrix. Multiple can be input either as a cell, 
+%                       where each cell contains a different matrix or as a
+%                       3D matrix (n*n*nPD, where n is the number of nodes
+%                       and nPD is the number of PD matrices).
 %           m,          number of connections that should be present in
 %                       final synthetic network
 %           modeltype,  specifies the generative rule (see below)
 %           modelvar,   specifies whether the generative rules are based on
 %                       power-law or exponential relationship
 %                       ({'powerlaw'}|{'exponential})
-%           params,     either a vector (in the case of the geometric
-%                       model) or a matrix (for all other models) of
-%                       parameters at which the model should be evaluated.
-%           Oparams,    a vector of parameters to use for the other
-%                       distance metrics where Oparams(i) is the parameter
-%                       to use for O{i}
+%           PDexpo,     the parameter controlling the values in PDMs. If
+%                       there are multipe PD matrices, PDexpo should be a
+%                       vector where each index gives the marameter for the
+%                       corresponding PD matrix
+%           gam,        the parameter controlling topology
+%           alpha,      the parameter controlling alpha values, should be a
+%                       1*3 vector. alpha(1) is the alpha value for the
+%                       first PD matrix (should set to 1), alpha(2) is the
+%                       value for the topology term, and alpha(3) is for
+%                       the second PD matrix
 %           epsilon,    the baseline probability of forming a particular
 %                       connection (should be a very small number
-%                       {default = 1e-5}).
+%                       {default = 0}).
 %
 %   Output:
-%           B,          an adjacency network
-%
+%           B,          an adjacency matrix
+%           b,          a vector giving the index of each edge in B. Note
+%                       that the ordering of b shows which edges formed
+%                       first (e.g., b(1) was the fiorst edge to form, b(2)
+%                       the second etc etc).
 %
 %   Full list of model types:
 %   (each model type realizes a different generative rule)
@@ -49,39 +57,13 @@ function [B,b] = gen_model_add_normsum(A,PDMs,m,modeltype,modelvar,eta,gam,alpha
 %       13. 'deg-prod'      product of degree
 %       14. 'com'           communicability
 %
-%   Example usage:
-%
-%       load demo_generative_models_data
-%
-%       % get number of bi-directional connections
-%       m = nnz(A)/2;
-%
-%       % get cardinality of network
-%       n = length(A);
-%
-%       % set model type
-%       modeltype = 'neighbors';
-%
-%       % set whether the model is based on powerlaw or exponentials
-%       modelvar = [{'powerlaw'},{'powerlaw'}];
-%
-%       % choose some model parameters
-%       params = [-2,0.2; -5,1.2; -1,1.5];
-%       nparams = size(params,1);
-%
-%       % generate synthetic networks
-%       B = generative_model(Aseed,D,m,modeltype,modelvar,params);
-%
-%       % store them in adjacency matrix format
-%       Asynth = zeros(n,n,nparams);
-%       for i = 1:nparams;
-%           a = zeros(n); a(B(:,i)) = 1; a = a + a';
-%           Asynth(:,:,i) = a;
-%       end
+%       How to convert b to B:
+%       n = length(A); B = zeros(n); B(b(:,i)) = 1; B = B + B'; 
 %
 %   Reference: Betzel et al (2016) Neuroimage 124:1054-64.
-%
+%              Oldham et al (2022) bioRixv
 %   Richard Betzel, Indiana University/University of Pennsylvania, 2015
+%   Edited by Stuart Oldham, Monash University 2021
 
 if ~exist('epsilon','var')
     epsilon = 0;
@@ -112,7 +94,7 @@ if isempty(PD)
     
     PD = ones(n);
     alpha(3) = 0;
-    eta(2) = 1;   
+    PDexpo(2) = 1;   
 end
 
 alpha(isnan(alpha)) = 0;
@@ -136,68 +118,68 @@ switch modeltype
     case 'clu-avg'
         clu = clustering_coef_bu(A);
         Kseed = bsxfun(@plus,clu(:,ones(1,n)),clu')/2;
-        b = fcn_clu(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_clu(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'clu-diff'
         clu = clustering_coef_bu(A);
         Kseed = abs(bsxfun(@minus,clu(:,ones(1,n)),clu'));
-        b = fcn_clu(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_clu(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'clu-max'
         clu = clustering_coef_bu(A);
         Kseed = bsxfun(@max,clu(:,ones(1,n)),clu');
-        b = fcn_clu(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_clu(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'clu-min'
         clu = clustering_coef_bu(A);
         Kseed = bsxfun(@min,clu(:,ones(1,n)),clu');
-        b = fcn_clu(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_clu(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'clu-prod'
         clu = clustering_coef_bu(A);
         Kseed = clu*clu';
-        b = fcn_clu(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_clu(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'deg-avg'
         kseed = sum(A,2);
         Kseed = bsxfun(@plus,kseed(:,ones(1,n)),kseed')/2;
-        b = fcn_deg(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_deg(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'deg-diff'
         kseed = sum(A,2);
         Kseed = abs(bsxfun(@minus,kseed(:,ones(1,n)),kseed'));
-        b = fcn_deg(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_deg(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'deg-max'
         kseed = sum(A,2);
         Kseed = bsxfun(@max,kseed(:,ones(1,n)),kseed');
-        b = fcn_deg(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_deg(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'deg-min'
         kseed = sum(A,2);
         Kseed = bsxfun(@min,kseed(:,ones(1,n)),kseed');
-        b = fcn_deg(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_deg(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'deg-prod'
         kseed = sum(A,2);
         Kseed = (kseed*kseed').*~eye(n);
-        b = fcn_deg(modeltype,A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_deg(modeltype,A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'neighbors'
         Kseed = (A*A).*~eye(n);
-        b = fcn_nghbrs(A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_nghbrs(A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'matching'
         Kseed = matching_ind(A);
         Kseed = Kseed + Kseed';
-        b = fcn_matching(A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_matching(A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 
     case 'sptl'
-        b = fcn_sptl(A,D,m,eta,modelvar,PD,alpha);
+        b = fcn_sptl(A,D,m,PDexpo,modelvar,PD,alpha);
 
     case 'com'
         Kseed = gexpm(A);
-        b = fcn_com(A,Kseed,D,m,eta,gam,modelvar,epsilon,PD,alpha);
+        b = fcn_com(A,Kseed,D,m,PDexpo,gam,modelvar,epsilon,PD,alpha);
 end
 
 B = zeros(n);
