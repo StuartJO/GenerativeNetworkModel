@@ -35,8 +35,6 @@ module load matlab
 
 # Unlike in other bits of code here, we don't just calculate the values in the upper triangle simply because I found there to be no computational benefit to doing this
 
-matlab -nodisplay -nosplash -r "addpath((genpath(${CODEDIR})); load('${DATADIR}/ReducedDirectMatrix.mat'); NODES = ${STARTNODE}:${ENDNODE}; NODES(NODES > Nodes)=[];for i = 1:length(POINTS); DIST(i,:) = distances(G,NODES(i)); end; save('${DATADIR}/DistanceMatrices/Output_${ID}.mat','DIST','NODES'); exit"
-
 if [ ${REDO} -eq 0 ]; then
 
 if [ ! -f "${DATADIR}/DistanceMatrices/Output_${ID}.mat" ]; then
