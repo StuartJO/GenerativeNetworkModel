@@ -111,6 +111,9 @@ function Mdlouts = CompileGenMdlOutputs(fileformat,subs,savenets,MltpFileINDS)
 %
 %   nets{mdlIND}{subIND} = all the networks produced during optimisation
 %       for model 'mdlIND' and subject 'subIND'
+%
+%   Input{mdlIND} = the initial input settings. NOTE: this assumes the saem
+%   settings for all subjects
 
 if nargin < 2
 	savenets = 0;

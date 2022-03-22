@@ -62,9 +62,9 @@ A = double(mdldata.adjs{SUB}>0);
 A_dist = mdldata.A_dist;
     
 if GROWTH
-    D = mdldata.dists;
+    PD1 = mdldata.dists;
 else
-    D = A_dist;
+    PD1 = A_dist;
 end   
     
 MDLIND = 1;
@@ -76,8 +76,14 @@ display(num2str(MDL))
 Input.PD1Func = 'exponential';
 Input.PD2Func = 'powerlaw';
 Input.ModelNum=1;
+% Note that for a single parameter model, additive and multiplicative are
+% the same. The additive formulation does an extra bit of computation in
+% normalising PD1, thus taking slightly more time, but this normalisation
+% has no effect when no other term is resolved. Due to it taking slightly
+% longer (and because I had many repeats to do) I just use the
+% multiplicative code for single parameter models
 Input.AddMult = 'Mult';
-PD = [];
+PD2 = [];
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
 % gamma
@@ -98,7 +104,7 @@ display(num2str(MDL))
 Input.ModelNum=1;
 Input.AddMult = 'Add';
 
-PD = mdldata.cCGE;
+PD2 = mdldata.cCGE;
 
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
@@ -120,8 +126,8 @@ Input.AddMult = 'Mult';
 Input.PD1Func = 'powerlaw';
 Input.PD2Func = 'powerlaw';
 
-D = mdldata.cCGE;
-PD = [];
+PD1 = mdldata.cCGE;
+PD2 = [];
 
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-50 100];
@@ -143,7 +149,7 @@ Input.AddMult = 'Add';
 Input.PD1Func = 'exponential';
 Input.PD2Func = 'powerlaw';
 
-PD = mdldata.uCGE;
+PD2 = mdldata.uCGE;
 
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
@@ -164,8 +170,8 @@ Input.AddMult = 'Mult';
 Input.PD1Func = 'powerlaw';
 Input.PD2Func = 'powerlaw';
 
-D = mdldata.uCGE;
-PD = [];
+PD1 = mdldata.uCGE;
+PD2 = [];
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-50 100];
 % gamma
@@ -185,8 +191,8 @@ Input.normsum = 0;
 Input.ParamRange(1,:) = [0 50];
     
 
-D = mdldata.hist_mpc;
-PD = [];
+PD1 = mdldata.hist_mpc;
+PD2 = [];
       Input.AddMult = 'Mult';
 %    fileoutname = 'mult2';
 % gamma
@@ -205,7 +211,7 @@ Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
 Input.ParamRange(1,:) = [-2 0];
     
-PD = mdldata.hist_mpc;
+PD2 = mdldata.hist_mpc;
 
 Input.AddMult = 'Add';
 
@@ -227,8 +233,8 @@ Input.normsum = 0;
 Input.ParamRange(1,:) = [0 50];
     
 
-D = mdldata.t1t2_mpc;
-PD = [];
+PD1 = mdldata.t1t2_mpc;
+PD2 = [];
 Input.AddMult = 'Mult';
 % gamma
 Input.ParamRange(2,:) = [0 0];
@@ -247,7 +253,7 @@ Input.PD2Func = 'powerlaw';
 Input.normsum = 0;
 Input.ParamRange(1,:) = [-2 0];
     
-PD = mdldata.t1t2_mpc;
+PD2 = mdldata.t1t2_mpc;
 Input.AddMult = 'Add';
 % gamma
 Input.ParamRange(2,:) = [0 0];
@@ -264,6 +270,7 @@ Input.ModelNum=3;
 Input.AddMult = 'Add';
 Input.PD1Func = 'exponential';
 Input.TopoFunc = 'powerlaw';
+PD2 = [];
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
 % gamma
@@ -273,10 +280,11 @@ Input.ParamRange(5,:) = [0 0];
 % alpha
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];    
+Input.ParamRange(4,:) = [0 0];   
+
 end
 
-Output = GenMdl(A,A_dist,D,PD,Input);
+Output = GenMdl(A,A_dist,PD1,PD2,Input);
 Output.Input.PhysMdlName = PHYS_MDL_NAME{MDL};
 
 Outputs.maxKS{MDLIND} = Output.maxKS;

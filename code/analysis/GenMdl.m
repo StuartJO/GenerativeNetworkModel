@@ -28,7 +28,7 @@ function MdlOutput = GenMdl(A,A_dist,PD1,PD2,Input)
 %
 % PD1 = Either a matrix indicating pairwise similarity/distances between nodes, or a cell where each
 % element contains such a distance matrix, to be used for the modelling itself.
-% The "growth" model is specied by the latter of these options.
+% The "growth" model is specified by the latter of these options.
 %
 % PD2 = A second matrix indicating pairwise similarity/distances between nodes in
 % A (unlike with PD1 a cell cannot be used as an input here). This could be 
@@ -72,14 +72,14 @@ function MdlOutput = GenMdl(A,A_dist,PD1,PD2,Input)
 %
 %  ndraw = number of repetitions/samples per step
 %
+%  PD1Func = 'power-law' or 'exponential'. Controls the interaction between
+%  PD1 and eta. Defaults to 'exponential'
+%
+%  TopoFunc = 'power-law' or 'exponential'. Controls the interaction between T
+%  and eta. Defaults to 'power-law'
+%
 %   The following are optional specifications for Input (will be set to
 %   defaults if not set):
-%
-%   PD1Func = 'power-law' or 'exponential'. Controls the interaction between
-%   PD1 and eta. Defaults to 'exponential'
-%
-%   TopoFunc = 'power-law' or 'exponential'. Controls the interaction between T
-%   and eta. Defaults to 'power-law'
 %
 %   PD2Func = 'power-law' or 'exponential'. Controls the interaction between
 %   PD2 and lam. Defaults to 'power-law'
@@ -98,40 +98,41 @@ function MdlOutput = GenMdl(A,A_dist,PD1,PD2,Input)
 % Outputs:
 % 
 % MdlOutput = a structure with the following fields:
-%   MdlOutput.maxKS = N*1 array of maxKS values for each network generated
+%   maxKS = N*1 array of maxKS values for each network generated
 %       during optimisation
-%   MdlOutput.DegCorr = N*1 array of values for the correlation with  
+%   DegCorr = N*1 array of values for the correlation with  
 %       empirical degree each network generated during optimisation  
-%   MdlOutput.KS = N*4 matrix of KS values for each network generated
+%   KS = N*4 matrix of KS values for each network generated
 %       during optimisation. Each column corresponds to the following 
 %       measure: 1 = degree; 2 = clustering; 3 = betweenness; 4 = mean edge 
 %       length
-%   MdlOutput.P = N*5 matrix of parameter values for each network generated
+%   P = N*5 matrix of parameter values for each network generated
 %       during optimisation
-%   MdlOutput.b = 1*N cell array, where each cell contains an edge index
+%   b = 1*N cell array, where each cell contains an edge index
 %       list for each network generated during optimisation
 % 
-%   MdlOutput.optim_maxKS = for networks generated using the parameters
+%   optim_maxKS = for networks generated using the parameters
 %       of the lowest maxKS value, a 1*100 array of maxKS values
-%   MdlOutput.optim_KS = for networks generated using the parameters
+%   optim_KS = for networks generated using the parameters
 %       of the lowest maxKS value, an 100*4 matrix of KS values
-%   MdlOutput.optim_b = a 1*100 cell array where each cell contains an edge
+%   optim_b = a 1*100 cell array where each cell contains an edge
 %       index list for each network generated during using the parameters 
 %       of the lowest maxKS value       
-%   MdlOutput.optim_DegCorr = for networks generated using the parameters
+%   optim_DegCorr = for networks generated using the parameters
 %       of the lowest maxKS value, a 1*100 array of values for the 
 %       correlation with empirical degree      
 %
-%   MdlOutput.bestDegCorr_maxKS = for networks generated using the parameters
+%   bestDegCorr_maxKS = for networks generated using the parameters
 %       of the largest degree correlation, a 1*100 array of maxKS values
-%   MdlOutput.bestDegCorr_KS = for networks generated using the parameters
+%   bestDegCorr_KS = for networks generated using the parameters
 %       of the largest degree correlation, an 100*4 matrix of KS values
-%   MdlOutput.bestDegCorr_b = a 1*100 cell array where each cell contains an edge
+%   bestDegCorr_b = a 1*100 cell array where each cell contains an edge
 %       index list for each network generated during using the parameters 
 %       of the largest degree correlation    
-%   MdlOutput.bestDegCorr_DegCorr = for networks generated using the parameters
+%   bestDegCorr_DegCorr = for networks generated using the parameters
 %       of the largest degree correlation, a 1*100 array of values for the 
-%       correlation with empirical degree     
+%       correlation with empirical degree   
+%   Input = the initial input settings
 %
 % You may wonder why the model has a different form to what we report in
 % the paper e.g., (D^eta)+a(T^gam) or (D^eta)+a(PC^gam) etc. Simply,
@@ -265,5 +266,5 @@ MdlOutput.bestDegCorr_DegCorr = bestDegCorr_DegCorr;
 % Save the input configurations to output. Helps to keep track of what was
 % done
 MdlOutput.Input = Input;
-MdlOutput.Input.Nnodes = length(A);
+MdlOutput.Input.NNodes = length(A);
 

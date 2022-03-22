@@ -49,17 +49,17 @@ adjs = mdldata.adjs;
 A_dist = mdldata.A_dist;
     
 if GROWTH
-    D = mdldata.dists;
+    PD1 = mdldata.dists;
 else
-    D = A_dist;
+    PD1 = A_dist;
 end   
 
-PD = [];
+PD2 = [];
 
 Input = Mdlouts.Inputs{MdlNum};
 Input.NNodes = length(A_dist);  
 P = Mdlouts.OptimMdl{MdlNum}.min_maxKS.P;
-Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);
+Fcv = CrossValidateModel(adjs,A_dist,PD1,PD2,P,1,Input);
 
 Fcv.P = P;
 

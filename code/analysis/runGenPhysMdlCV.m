@@ -39,55 +39,55 @@ adjs = mdldata.adjs;
 A_dist = mdldata.A_dist;
   
 if GROWTH
-    D = mdldata.dists;
+    PD1 = mdldata.dists;
 else
-    D = A_dist;
+    PD1 = A_dist;
 end   
 
 if MdlNum == 1
 
-PD = [];
+PD2 = [];
 
 elseif MdlNum == 2
 
-PD = mdldata.cCGE;
+PD2 = mdldata.cCGE;
 
 elseif MdlNum == 3
 
-D = mdldata.cCGE;
-PD = [];
+PD1 = mdldata.cCGE;
+PD2 = [];
 
 elseif MdlNum == 4
 
-PD = mdldata.uCGE;
+PD2 = mdldata.uCGE;
 
 elseif MdlNum == 5
 
-D = mdldata.uCGE;
-PD = [];
+PD1 = mdldata.uCGE;
+PD2 = [];
 
 elseif MdlNum == 6
 
-D = mdldata.hist_mpc;
-PD = [];
+PD1 = mdldata.hist_mpc;
+PD2 = [];
 
 
 elseif MdlNum == 7
 
-PD = mdldata.hist_mpc;
+PD2 = mdldata.hist_mpc;
 
 elseif MdlNum == 8
 
-D = mdldata.t1t2_mpc;
-PD = [];
+PD1 = mdldata.t1t2_mpc;
+PD2 = [];
 
 elseif MdlNum == 9
 
-PD = mdldata.t1t2_mpc;
+PD2 = mdldata.t1t2_mpc;
 
 elseif MdlNum == 10
 
-PD = [];
+PD2 = [];
 
 end
 
@@ -96,7 +96,7 @@ Mdlouts = load([INPUTLOC,'/',parcname,'_PhysMdls_Growth_',num2str(GROWTH),'_outp
 Input = Mdlouts.Inputs{MdlNum};
 Input.NNodes = length(A_dist);  
 P = Mdlouts.OptimMdl{MdlNum}.min_maxKS.P;
-Fcv = CrossValidateModel(adjs,A_dist,D,PD,P,1,Input);
+Fcv = CrossValidateModel(adjs,A_dist,PD1,PD2,P,1,Input);
 
 Fcv.P = P;
 

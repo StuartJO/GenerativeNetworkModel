@@ -46,15 +46,17 @@ function CV = CompileCVOutputs(fileformat,mdls,Iters,nsub,SaveNets)
 %   P{mdl} = the parameters used during crossvalidation for model number 
 %       'mdl'
 %
-%   CV.Topography{mdl}{t} = the topology values for measure 't' (1 = degree
+%   Topography{mdl}{t} = the topology values for measure 't' (1 = degree
 %       ; 2 = clustering; 3 = betweenness; 4 = mean edge length) for all 
 %       networks produced during crossvalidation for model number 'mdl'.
 %       Rows correspond to each network, columns correspond to nodes.
 %
-%   CV.DataID{mdl} = for each network for model number 'mdl', identifies
+%   DataID{mdl} = for each network for model number 'mdl', identifies
 %       which subjects network was being modelled (first column), with
 %       which subjects parameters (second column), and the iteration number
 %       (third column)
+%
+%   Input{mdl} = the initial set of input settings for model numebr 'mdl'
 
 if nargin < 5
     SaveNets = 0;

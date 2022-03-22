@@ -68,20 +68,106 @@ Compile_PhysMdls_FCV
 
 et voilà! You have rerun all the analysis! Yayyyy
 
-You may want to use this code for your own data. Use the runGenTopoMdl.m as a template, as I used this as a wrapper for all my topological models. Essentially all you need is a) a number of connectomes for a number of subjects arranged in a cell (adjs), a final distance matrix to evaluate the model with (A_dist, code currently assumes only a single A_dist applies to all networks but you could have individualised ones)), and finally a distance matrix to run the model with (if not using a growth model, this will be the same as A_dist).
+You may want to use this code for your own data. I have provided some functions which allow you to do so. For topological models, you can do the following:
 
-The following scripts will require editing to work with your own data if you want to go that far:
+```
+% A = cell of adjacency networks to model
+% A_dist = a final distance matrix to use to calculate maxKS
+% D = a distance matrix to use in the model itself, or a cell array where 
+% each cell contains a distance matrix. Probably for your data this is the same as A_dist
+addpath(genpath(('./')))
 
-runGenTopoMdl.m
-runGenPhysMdl.m
+% If you want to have an individualised seed network for each subject, the code isn't set up to do that (sorry not sorry)
 
-runGenTopoMdlCV.m
-runGenPhysMdlCV.m
+Nsubs = length(A);
+mkdir ./data/CustomOptimisation/
+for sub = 1:Nsubs
+MdlOutput = runCustomGenTopoMdl(A{sub},A_dist,D,'add3',1:13);
+save(['./data/CustomOptimisation/Sub_',num2str(i),'_add3_topomdls.mat'],'-v7.3','struct','MdlOutput')
+end
 
-Compile_TopoMdls.m
-Compile_PhysMdls.m
+%% Run cross validation
 
-Compile_TopoMdls_FCV.m
-Compile_PhysMdls_FCV.m
+fileformat = ['./data/CustomOptimisation/Sub_#_add3_topomdls.mat'];
+        
+CompiledOutput = CompileGenMdlOutputs(fileformat,1:Nsubs,1);
 
-The editing will require 1) updating input files and 2) updating output filenames
+mkdir ./data/CustomCrossValidation/
+
+for mdl = 1:13
+    for iter = 1:20
+    P = CompiledOutput.OptimMdl{mdl}.min_maxKS.P;
+    Input = CompiledOutput.Inputs{mdl};
+    CV_output = CrossValidateModel(A,A_dist,D,[],P,1,Input)
+    save(['./data/CustomCrossValidation/Mdl_',num2str(mdl),'_add3_topomdls_iter_',num2str(iter),'.mat'],'-v7.3','struct','MdlOutput')
+    end
+end
+fileformat = ['./data/CustomCrossValidation/Mdl_#_add3_topomdls_iter_$.mat']
+CV = CompileCVOutputs(fileformat,1:13,1,Nsubs,0);
+```
+I want to stress the above is purely an illustrative example. Running the above exactly as shown in MATLAB will take a very very very long time. You can easily adapt the above to be seperate functions which you can then run on a cluster (ADVISED).
+
+If you have same other measure of node/region similarity/distance and want to see how that does (much like we had distance and gene expression for example) you can try the following:
+
+```
+% A = cell of adjacency networks to model
+% A_dist = a final distance matrix to use to calculate maxKS
+% PD1 = a distance matrix to use in the model itself, or a cell array where 
+% each cell contains a distance matrix. Probably for your data this is the same as A_dist
+% PD2 = a distance/similarity matrix to use in the model itself, or a cell array where 
+% each cell contains a distance/similarity matrix.
+
+
+% These are the same parameters I use to run the spatial+uCGE model
+Input.ModelNum=1;
+% Model formulation
+Input.AddMult = 'Add';
+
+Input.PD1Func = 'exponential';
+Input.PD2Func = 'powerlaw';
+
+% eta (PD1 param)
+Input.ParamRange(1,:) = [-2 0];
+
+% gamma
+Input.ParamRange(2,:) = [1 1];
+
+% lambda (PD2 param)
+Input.ParamRange(5,:) = [-50 250];
+
+% alpha (for topology)
+Input.ParamRange(3,:) = [0 0];
+
+% alpha2 (alpha for PD2)
+Input.ParamRange(4,:) = [0 8];
+
+addpath(genpath(('./')))
+
+Nsubs = length(A);
+mkdir ./data/CustomOptimisation/
+for sub = 1:Nsubs
+MdlOutput = runCustomGenPhysMdl(A{sub},A_dist,PD1,PD2,Input);
+save(['./data/CustomOptimisation/Sub_',num2str(i),'_physmdl.mat'],'-v7.3','struct','MdlOutput')
+end
+
+%% Run cross validation
+
+fileformat = ['./data/CustomOptimisation/Sub_#_physmdl.mat'];
+        
+CompiledOutput = CompileGenMdlOutputs(fileformat,1:Nsubs,1);
+
+mkdir ./data/CustomCrossValidation/
+
+for mdl = 1
+    for iter = 1:20
+    P = CompiledOutput.OptimMdl{mdl}.min_maxKS.P;
+    Input = CompiledOutput.Inputs{mdl};
+    CV_output = CrossValidateModel(A,A_dist,PD1,PD2,P,1,Input)
+    save(['./data/CustomCrossValidation/Mdl_',num2str(mdl),'_physmdls_iter_',num2str(iter),'.mat'],'-v7.3','struct','MdlOutput')
+    end
+end
+fileformat = ['./data/CustomCrossValidation/Mdl_#_physmdls_iter_$.mat']
+CV = CompileCVOutputs(fileformat,1,1,Nsubs,0);
+
+```
+As before, this is just ilustrative!
