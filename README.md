@@ -98,11 +98,11 @@ for mdl = 1:13
     for iter = 1:20
     P = CompiledOutput.OptimMdl{mdl}.min_maxKS.P;
     Input = CompiledOutput.Inputs{mdl};
-    CV_output = CrossValidateModel(A,A_dist,D,[],P,1,Input)
+    CV_output = CrossValidateModel(A,A_dist,D,[],P,1,Input);
     save(['./data/CustomCrossValidation/Mdl_',num2str(mdl),'_add3_topomdls_iter_',num2str(iter),'.mat'],'-v7.3','struct','MdlOutput')
     end
 end
-fileformat = ['./data/CustomCrossValidation/Mdl_#_add3_topomdls_iter_$.mat']
+fileformat = ['./data/CustomCrossValidation/Mdl_#_add3_topomdls_iter_$.mat'];
 CV = CompileCVOutputs(fileformat,1:13,1,Nsubs,0);
 ```
 I want to stress the above is purely an illustrative example. Running the above exactly as shown in MATLAB will take a very very very long time. You can easily adapt the above to be seperate functions which you can then run on a cluster (ADVISED).
@@ -162,11 +162,11 @@ for mdl = 1
     for iter = 1:20
     P = CompiledOutput.OptimMdl{mdl}.min_maxKS.P;
     Input = CompiledOutput.Inputs{mdl};
-    CV_output = CrossValidateModel(A,A_dist,PD1,PD2,P,1,Input)
+    CV_output = CrossValidateModel(A,A_dist,PD1,PD2,P,1,Input);
     save(['./data/CustomCrossValidation/Mdl_',num2str(mdl),'_physmdls_iter_',num2str(iter),'.mat'],'-v7.3','struct','MdlOutput')
     end
 end
-fileformat = ['./data/CustomCrossValidation/Mdl_#_physmdls_iter_$.mat']
+fileformat = ['./data/CustomCrossValidation/Mdl_#_physmdls_iter_$.mat'];
 CV = CompileCVOutputs(fileformat,1,1,Nsubs,0);
 
 ```
