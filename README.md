@@ -170,4 +170,4 @@ fileformat = ['./data/CustomCrossValidation/Mdl_#_physmdls_iter_$.mat'];
 CV = CompileCVOutputs(fileformat,1,1,Nsubs,0);
 
 ```
-As before, this is just ilustrative!
+As before, this is just illustrative! Advise writing the above into functions you can submit on a cluster
