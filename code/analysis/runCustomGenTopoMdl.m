@@ -1,6 +1,13 @@
 function MdlOutput = runCustomGenTopoMdl(A,A_dist,D,TYPE,MDLS)
 
-% This runs the topological generative models.
+% This runs the topological generative models with the form
+% (PD1^eta)*a1(T^gam)or (PD1^eta)+a1(T^gam)
+%
+% where PD is a measure of distance/similarity between a pair of
+% nodes; T is some measure of the topology between a pair of nodes; and
+% eta, gam, and a1 are free parameters. Note that each power-law
+% interaction (e.g., PD1^eta) can be replaced with an exponential function
+% (e.g., exp(eta*PD1)).
 %
 % Inputs:
 % A = The adjacency matrix to model
@@ -93,32 +100,32 @@ if strcmp(TYPE,'mult2')
 % gamma
 Input.ParamRange(2,:) = [-8 8];
 % lambda (PD param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [1 1];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD)
-Input.ParamRange(4,:) = [1 1];     
+Input.ParamRange(4,:) = [NaN NaN];     
 elseif strcmp(TYPE,'add2')
     Input.AddMult = 'Add';
 % gamma
-Input.ParamRange(2,:) = [1 1];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD)
-Input.ParamRange(4,:) = [0 0];    
+Input.ParamRange(4,:) = [NaN NaN];    
     
 elseif strcmp(TYPE,'add3')
 Input.AddMult = 'Add';
 % gamma
 Input.ParamRange(2,:) = [-8 8];
 % lambda (PD param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD)
-Input.ParamRange(4,:) = [0 0];   
+Input.ParamRange(4,:) = [NaN NaN];   
 else
     error('Unknown ''TYPE'' specified')
 end
@@ -130,6 +137,10 @@ MDLIND = 1;
 for MDL = MDLS
     
 Input.ModelNum=MDL;
+
+if MDL == 1
+    Input.ParamRange(2:5,:) = NaN;
+end
 
 if TYPE == 2
     % Experimentation led us to find this parameter range was needed when

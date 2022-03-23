@@ -130,13 +130,13 @@ Input.PD2Func = 'powerlaw';
 Input.ParamRange(1,:) = [-2 0];
 
 % gamma
-Input.ParamRange(2,:) = [1 1];
+Input.ParamRange(2,:) = [NaN NaN];
 
 % lambda (PD2 param)
 Input.ParamRange(5,:) = [-50 250];
 
 % alpha (for topology)
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 
 % alpha2 (alpha for PD2)
 Input.ParamRange(4,:) = [0 8];

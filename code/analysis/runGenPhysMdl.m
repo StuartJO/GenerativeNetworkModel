@@ -87,13 +87,13 @@ PD2 = [];
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [1 1];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [1 1];
+Input.ParamRange(4,:) = [NaN NaN];
 
 elseif MDL == 2
  
@@ -109,11 +109,11 @@ PD2 = mdldata.cCGE;
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
 % gamma
-Input.ParamRange(2,:) = [1 1];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
 Input.ParamRange(5,:) = [-50 250];
 % alpha
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
 Input.ParamRange(4,:) = [0 8];
 
@@ -132,13 +132,13 @@ PD2 = [];
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-50 100];
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];
+Input.ParamRange(4,:) = [NaN NaN];
 
 % Additive 3 Spatial + non corrected gene 
 elseif MDL == 4
@@ -154,11 +154,11 @@ PD2 = mdldata.uCGE;
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-2 0];
 % gamma
-Input.ParamRange(2,:) = [1 1];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
 Input.ParamRange(5,:) = [-50 250];
 % alpha
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
 Input.ParamRange(4,:) = [0 8];
 % Non Corrected gene
@@ -175,13 +175,13 @@ PD2 = [];
 % eta (PD1 param)
 Input.ParamRange(1,:) = [-50 100];
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];
+Input.ParamRange(4,:) = [NaN NaN];
 
 elseif MDL == 6
     
@@ -196,13 +196,13 @@ PD2 = [];
       Input.AddMult = 'Mult';
 %    fileoutname = 'mult2';
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [1 1];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [1 1];   
+Input.ParamRange(4,:) = [NaN NaN];   
 
 elseif MDL == 7
 
@@ -216,11 +216,11 @@ PD2 = mdldata.hist_mpc;
 Input.AddMult = 'Add';
 
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
 Input.ParamRange(5,:) = [0 50];
 % alpha
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
 Input.ParamRange(4,:) = [0 8];   
 
@@ -237,13 +237,13 @@ PD1 = mdldata.t1t2_mpc;
 PD2 = [];
 Input.AddMult = 'Mult';
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [1 1];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [1 1];   
+Input.ParamRange(4,:) = [NaN NaN];   
 
 elseif MDL == 9
 
@@ -256,11 +256,11 @@ Input.ParamRange(1,:) = [-2 0];
 PD2 = mdldata.t1t2_mpc;
 Input.AddMult = 'Add';
 % gamma
-Input.ParamRange(2,:) = [0 0];
+Input.ParamRange(2,:) = [NaN NaN];
 % lambda (PD2 param)
 Input.ParamRange(5,:) = [0 50];
 % alpha
-Input.ParamRange(3,:) = [0 0];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD2)
 Input.ParamRange(4,:) = [0 8];  
 
@@ -276,11 +276,11 @@ Input.ParamRange(1,:) = [-2 0];
 % gamma
 Input.ParamRange(2,:) = [-8 8];
 % lambda (PD2 param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD2)
-Input.ParamRange(4,:) = [0 0];   
+Input.ParamRange(4,:) = [NaN NaN];   
 
 end
 

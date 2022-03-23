@@ -48,22 +48,22 @@ if TYPE == 1
 % gamma
 Input.ParamRange(2,:) = [-8 8];
 % lambda (PD param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
-Input.ParamRange(3,:) = [1 1];
+Input.ParamRange(3,:) = [NaN NaN];
 % alpha2 (alpha for PD)
-Input.ParamRange(4,:) = [1 1];     
+Input.ParamRange(4,:) = [NaN NaN];     
 elseif TYPE == 2
     Input.AddMult = 'Add';
     fileoutname = 'add2';
 % gamma
 Input.ParamRange(2,:) = [1 1];
 % lambda (PD param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD)
-Input.ParamRange(4,:) = [0 0];    
+Input.ParamRange(4,:) = [NaN NaN];    
     
 elseif TYPE == 3
 Input.AddMult = 'Add';
@@ -71,11 +71,11 @@ fileoutname = 'add3';
 % gamma
 Input.ParamRange(2,:) = [-8 8];
 % lambda (PD param)
-Input.ParamRange(5,:) = [0 0];
+Input.ParamRange(5,:) = [NaN NaN];
 % alpha
 Input.ParamRange(3,:) = [0 8];
 % alpha2 (alpha for PD)
-Input.ParamRange(4,:) = [0 0];   
+Input.ParamRange(4,:) = [NaN NaN];   
     
 end
 
@@ -96,6 +96,10 @@ MDLIND = 1;
 for MDL = MDLS
     
 Input.ModelNum=MDL;
+
+if MDL == 1
+    Input.ParamRange(2:5,:) = NaN;
+end
 
 if TYPE == 2
     % Experimentation led us to find this parameter range was needed when

@@ -64,6 +64,10 @@ function MdlOutput = GenMdl(A,A_dist,PD1,PD2,Input)
 %       ParamRange(3,:) = a1
 %       ParamRange(4,:) = a2
 %       ParamRange(5,:) = lam
+%  'ParamRange(i,:) = [x x]' will mean 'x' is always used as an input for
+%  parameter 'i'. 'ParamRange(i,:) = [NaN NaN]' means that parameter isn't
+%  being included (if this parameter is required to be a value, you will
+%  encounter an error)
 %
 %  pow = the severity/exponent for the opotimisation. Higher values will
 %  make it more likely to sample from cells that have the smallest maxKS
