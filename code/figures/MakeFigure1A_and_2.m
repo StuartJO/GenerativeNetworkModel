@@ -156,6 +156,8 @@ exportgraphics(gcf,'FetalBrainParc.png','Resolution','300')
 load('Fetal_surfaces_native.mat')
 load('fsaverage_surface_data.mat')
 
+% Calculate surface area
+
 for i = 1:19
 
     if i < 19
@@ -187,7 +189,7 @@ ylabel('Surface area')
 
 xlabel('Age (GA)');
 
-% Onyl label certain weeks
+% Only label certain weeks
 
 GA_weeks = 1:3:16;
 
@@ -206,13 +208,12 @@ xtickangle(45)
 
 ax = axes('Position',[0.5903    0.1541    0.3593    0.7709]);
 
-load('random200_distances.mat')
-%cmap = parula(19);
+load('random200_data4topomdl.mat')
 
 cmap = turbo(19);
 
 for i = 1:19
-distances = triu2vec(ADJS{i},1);
+distances = triu2vec(dists{i},1);
 
 hold on
 
