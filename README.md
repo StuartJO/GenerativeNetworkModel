@@ -1,6 +1,6 @@
 # GenerativeNetworkModel
 
-This code is for Modeling spatial, developmental, physiological, and topological constraints on human brain connectivity
+This code is for [Modeling spatial, developmental, physiological, and topological constraints on human brain connectivity](https://www.science.org/doi/10.1126/sciadv.abm6127)
 
 This requires the Brain Connectivity Toolbox (https://sites.google.com/site/bctnet/) to run some functions (place it into this directory).
 
